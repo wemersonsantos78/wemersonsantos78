@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora NSS PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+    /* ================================================================
+       DESIGN SYSTEM — FARMÁCIA
+       Verde:  #2e7d32 | Hover: #1b5e20 | Mid: #4caf50 | Light: #e8f5e9
+       Pills:  border-radius 999px
+       Cards:  border-radius 16px
+       Links:  #6b5e3f
+       BG:     #f4f5f3 | Cards: #ffffff
+    ================================================================ */
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+        --green-primary:  #052e16;
+        --green-mid:      #4caf50;
+        --green-light:    #e8f5e9;
+        --green-hover:    #1b5e20;
+        --green-border:   rgba(46,125,50,.28);
+
+        --surface-bg:     #f4f5f3;
+        --surface-card:   #ffffff;
+        --surface-hover:  #f0f0f0;
+        --surface-input:  #fafafa;
+        --surface-stripe: #f9fafb;
+
+        --border-default: #e2e4e0;
+        --border-active:  #d1d5db;
+
+        --text-primary:   #111827;
+        --text-secondary: #4b5563;
+        --text-muted:     #9ca3af;
+        --text-link:      #6b5e3f;
+
+        --shadow-xs:    0 1px 3px rgba(0,0,0,.06);
+        --shadow-sm:    0 2px 8px rgba(0,0,0,.07);
+        --shadow-md:    0 4px 18px rgba(0,0,0,.09);
+        --shadow-green: 0 4px 18px rgba(46,125,50,.22);
+
+        --radius-pill:  999px;
+        --radius-card:  16px;
+        --radius-input: 10px;
+
+        --font:         'DM Sans', system-ui, sans-serif;
+        --font-display: 'DM Serif Display', serif;
+        --transition:   .22s ease;
+    }
+
+    @keyframes fadeDown  { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeUp    { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeLeft  { from{opacity:0;transform:translateX(-18px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes scalePop  { from{opacity:0;transform:scale(.84)} to{opacity:1;transform:scale(1)} }
+    @keyframes pulse     { 0%,100%{opacity:1} 50%{opacity:.35} }
+    @keyframes spin      { to{transform:rotate(360deg)} }
+
+    body {
+        font-family: var(--font);
+        background: var(--surface-bg);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* ── TOP BAR ──────────────────────────────── */
+    .topbar {
+        background: var(--green-primary);
+        height: 52px;
+        padding: 0 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 12px rgba(46,125,50,.35);
+    }
+    .topbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #fff;
+        font-weight: 800;
+        font-size: .93rem;
+        letter-spacing: -.01em;
+    }
+    .logo-dot {
+        width: 8px; height: 8px;
+        border-radius: 999px;
+        background: #a5d6a7;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    .topbar-right { display:flex; align-items:center; gap:8px; }
+    .topbar-pill {
+        padding: 5px 14px;
+        border-radius: var(--radius-pill);
+        border: 1.5px solid rgba(255,255,255,.35);
+        background: rgba(255,255,255,.12);
+        color: #fff;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: background var(--transition);
+    }
+    .topbar-pill:hover { background: rgba(255,255,255,.22); }
+    .topbar-pill .dot {
+        width: 6px; height: 6px;
+        border-radius: 999px;
+        background: #69f0ae;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* ── WRAPPER ──────────────────────────────── */
+    .nss-widget {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px 20px 60px;
+    }
+
+    /* ── PAGE HEADER ──────────────────────────── */
+    .page-header {
+        animation: fadeDown .5s ease both;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border-default);
+    }
+    .page-header h1 {
+        font-family: var(--font-display);
+        font-size: 2rem;
+        font-weight: 400;
+        color: var(--text-primary);
+        letter-spacing: -.02em;
+        line-height: 1.15;
+    }
+    .page-header h1 em { font-style:italic; color:var(--green-primary); }
+    .page-header p { font-size:.85rem; color:var(--text-muted); margin-top:5px; }
+    .header-tags { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+
+    /* ── TABS ─────────────────────────────────── */
+    .tabs-nav {
+        display: flex;
+        gap: 4px;
+        background: var(--surface-card);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-pill);
+        padding: 4px;
+        margin-bottom: 22px;
+        box-shadow: var(--shadow-xs);
+        animation: fadeDown .55s ease both;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .tabs-nav::-webkit-scrollbar { display:none; }
+    .tab-btn {
+        padding: 8px 20px;
+        border-radius: var(--radius-pill);
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: .83rem;
+        font-family: var(--font);
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .tab-btn:hover { background:var(--surface-hover); color:var(--text-primary); }
+    .tab-btn.active {
+        background: var(--green-primary);
+        color: #fff;
+        box-shadow: var(--shadow-green);
+    }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; animation:fadeUp .4s ease both; }
+
+    /* ── CARDS ────────────────────────────────── */
+    .nss-card {
+        background: var(--surface-card);
+        border-radius: var(--radius-card);
+        border: 1px solid var(--border-default);
+        padding: 24px;
+        box-shadow: var(--shadow-xs);
+        transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp .45s ease both;
+    }
+    .nss-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--green-border);
+        transform: translateY(-2px);
+    }
+    .nss-card.accented::before {
+        content:'';
+        position:absolute;
+        top:0; left:0; right:0;
+        height:3px;
+        background:linear-gradient(90deg,var(--green-primary),var(--green-mid));
+        border-radius:var(--radius-card) var(--radius-card) 0 0;
+    }
+
+    .card-header {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        margin-bottom:18px;
+        flex-wrap:wrap;
+        gap:10px;
+    }
+    .card-title {
+        display:flex;
+        align-items:center;
+        gap:9px;
+        font-size:.93rem;
+        font-weight:700;
+        color:var(--text-primary);
+    }
+    .card-icon {
+        width:30px; height:30px;
+        border-radius:var(--radius-pill);
+        background:var(--green-light);
+        display:flex; align-items:center; justify-content:center;
+        font-size:.88rem;
+        flex-shrink:0;
+    }
+    .card-meta {
+        font-size:.75rem;
+        color:var(--text-muted);
+        background:var(--surface-stripe);
+        padding:4px 10px;
+        border-radius:var(--radius-pill);
+        border:1px solid var(--border-default);
+    }
+    .nss-subtitle {
+        font-size:.8rem;
+        color:var(--text-muted);
+        margin:-10px 0 16px;
+        line-height:1.6;
+    }
+
+    /* ── GRIDS ────────────────────────────────── */
+    .grid-2    { display:grid; grid-template-columns:1.1fr 1fr; gap:18px; margin-bottom:18px; }
+    .grid-3    { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px; }
+    .grid-2-ai { display:grid; grid-template-columns:1.15fr 1fr; gap:18px; }
+    @media(max-width:980px){ .grid-2,.grid-2-ai{grid-template-columns:1fr} .grid-3{grid-template-columns:repeat(2,1fr)} }
+    @media(max-width:560px){ .grid-3{grid-template-columns:1fr} }
+
+    /* ── FIELDS ───────────────────────────────── */
+    .fields-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:13px; margin-bottom:14px; }
+    @media(max-width:560px){ .fields-grid{grid-template-columns:1fr} }
+
+    .nss-field { display:flex; flex-direction:column; gap:5px; }
+    .nss-label {
+        font-size:.78rem;
+        color:var(--text-secondary);
+        font-weight:600;
+        display:flex; align-items:center; gap:5px;
+    }
+    .label-chip { font-size:.65rem; padding:1px 7px; border-radius:var(--radius-pill); font-weight:700; letter-spacing:.04em; }
+    .chip-green { background:var(--green-light); color:var(--green-primary); }
+    .chip-gray  { background:#f3f4f6; color:#6b7280; }
+    .chip-red   { background:#fef2f2; color:#dc2626; }
+
+    .input-wrap { position:relative; }
+    .input-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:.8rem; color:var(--text-muted); pointer-events:none; }
+    .input-wrap .nss-input { padding-right:34px; }
+
+    .nss-input {
+        padding: 10px 14px;
+        border-radius: var(--radius-input);
+        border: 1.5px solid var(--border-default);
+        background: var(--surface-input);
+        color: var(--text-primary);
+        font-size: .93rem;
+        font-family: var(--font);
+        font-weight: 600;
+        outline: none;
+        transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+        width: 100%;
+    }
+    .nss-input:hover { border-color:#bdbdbd; }
+    .nss-input:focus { border-color:var(--green-primary); box-shadow:0 0 0 3px rgba(46,125,50,.12); background:#fff; }
+    .nss-input::placeholder { color:var(--text-muted); font-weight:400; }
+
+    .sep { border:none; border-top:1px solid var(--border-default); margin:18px 0; }
+
+    /* ── BUTTONS ──────────────────────────────── */
+    .nss-btn {
+        padding: 11px 24px;
+        border-radius: var(--radius-pill);
+        border: none;
+        cursor: pointer;
+        font-size: .83rem;
+        font-family: var(--font);
+        font-weight: 700;
+        transition: all var(--transition);
+        text-transform: uppercase;
+        letter-spacing: .055em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        position: relative;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .nss-btn::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0); transition:background .15s; border-radius:inherit; }
+    .nss-btn:active::after { background:rgba(255,255,255,.18); }
+
+    .nss-btn-primary { background:var(--green-primary); color:#fff; box-shadow:var(--shadow-green); }
+    .nss-btn-primary:hover { background:var(--green-hover); transform:translateY(-2px); box-shadow:0 8px 24px rgba(46,125,50,.32); }
+
+    .nss-btn-secondary { background:var(--surface-card); color:var(--text-secondary); border:1.5px solid var(--border-default); }
+    .nss-btn-secondary:hover { background:var(--surface-hover); border-color:#9ca3af; transform:translateY(-1px); }
+
+    .nss-btn-ghost { background:transparent; color:var(--green-primary); border:1.5px solid var(--green-border); padding:8px 18px; font-size:.78rem; }
+    .nss-btn-ghost:hover { background:var(--green-light); border-color:rgba(46,125,50,.5); }
+
+    .btn-group { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+    .btn-group .nss-btn-primary { flex:1; min-width:160px; }
+
+    .nss-btn.loading { pointer-events:none; opacity:.75; }
+    .nss-btn.loading .btn-icon { animation:spin .7s linear infinite; display:inline-block; }
+
+    /* ── KPI CARDS ────────────────────────────── */
+    .kpi-card {
+        background: var(--surface-card);
+        border: 1px solid var(--border-default);
+        border-radius: 12px;
+        padding: 16px 16px 14px;
+        transition: all var(--transition);
+        animation: scalePop .5s ease both;
+        position: relative;
+        overflow: hidden;
+    }
+    .kpi-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--kpi-color,var(--green-mid)); opacity:.5; }
+    .kpi-card:hover { border-color:var(--green-border); box-shadow:var(--shadow-sm); transform:translateY(-2px); }
+    .kpi-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+    .kpi-label { font-size:.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.09em; font-weight:700; }
+    .kpi-badge { font-size:.65rem; padding:2px 8px; border-radius:var(--radius-pill); font-weight:700; }
+    .badge-green { background:var(--green-light); color:var(--green-primary); }
+    .badge-red   { background:#fef2f2; color:#dc2626; }
+    .badge-gray  { background:#f3f4f6; color:#6b7280; }
+    .badge-amber { background:#fffbeb; color:#d97706; }
+    .kpi-value { font-size:1.6rem; font-weight:800; color:var(--text-primary); line-height:1; animation:scalePop .6s ease both; }
+    .kpi-trend { font-size:.72rem; color:var(--text-muted); margin-top:5px; }
+    .kpi-trend strong { color:var(--text-secondary); }
+
+    /* ── PROGRESS ─────────────────────────────── */
+    .progress-block { margin-bottom:20px; }
+    .progress-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+    .progress-label { font-size:.8rem; color:var(--text-secondary); font-weight:600; }
+    .progress-pct   { font-size:.8rem; font-weight:700; color:var(--green-primary); }
+    .progress-track { height:8px; background:#e9ebe8; border-radius:var(--radius-pill); overflow:hidden; }
+    .progress-fill  { height:100%; background:linear-gradient(90deg,var(--green-primary),var(--green-mid)); border-radius:var(--radius-pill); transition:width 1s cubic-bezier(.34,1.56,.64,1); }
+
+    /* ── RESULT BOXES ─────────────────────────── */
+    .result-box {
+        border-radius:12px;
+        padding:14px 16px;
+        font-size:.84rem;
+        line-height:1.55;
+        border:1.5px solid;
+        display:flex;
+        gap:10px;
+        align-items:flex-start;
+        animation:fadeUp .4s ease both;
+    }
+    .rb-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+    .result-box.success { background:var(--green-light); border-color:rgba(46,125,50,.3); color:#1b5e20; }
+    .result-box.info    { background:#e3f2fd; border-color:rgba(33,150,243,.3); color:#1565c0; }
+    .result-box.warning { background:#fffde7; border-color:rgba(245,127,23,.35); color:#e65100; }
+
+    /* ── MINI STATS ───────────────────────────── */
+    .stat-mini { display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--surface-stripe); border-radius:10px; border:1px solid var(--border-default); margin-bottom:8px; }
+    .stat-mini-icon { width:32px; height:32px; border-radius:var(--radius-pill); display:flex; align-items:center; justify-content:center; font-size:.88rem; flex-shrink:0; }
+    .stat-mini-label { font-size:.72rem; color:var(--text-muted); margin-bottom:1px; }
+    .stat-mini-val   { font-size:.95rem; font-weight:700; color:var(--text-primary); }
+
+    /* ── CHART ────────────────────────────────── */
+    .chart-wrap { position:relative; height:260px; margin-top:10px; }
+    .section-gap { margin-top:18px; }
+
+    /* ── AI ───────────────────────────────────── */
+    .ai-badge-row { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; }
+    .ai-badge {
+        padding:5px 12px;
+        border-radius:var(--radius-pill);
+        font-size:.68rem;
+        text-transform:uppercase;
+        letter-spacing:.07em;
+        font-weight:700;
+        border:1.5px solid var(--border-default);
+        color:var(--text-secondary);
+        background:var(--surface-hover);
+        transition:transform var(--transition);
+        animation:fadeLeft .5s ease both;
+    }
+    .ai-badge:hover { transform:scale(1.04); }
+    .ai-badge.good { border-color:rgba(46,125,50,.55); color:var(--green-primary); background:var(--green-light); }
+    .ai-badge.warn { border-color:rgba(230,81,0,.4); color:#bf360c; background:#fff3e0; }
+
+    .ai-rec {
+        background:var(--surface-card);
+        border:1px solid var(--border-default);
+        border-left:3px solid var(--green-primary);
+        border-radius:12px;
+        padding:13px 15px;
+        margin-top:10px;
+        animation:fadeLeft .5s ease both;
+        transition:all var(--transition);
+    }
+    .ai-rec:hover { transform:translateX(3px); border-color:rgba(46,125,50,.4); box-shadow:var(--shadow-xs); }
+    .ai-rec-title { font-size:.86rem; font-weight:700; color:var(--green-primary); margin-bottom:4px; }
+    .ai-rec-body  { font-size:.82rem; color:var(--text-secondary); line-height:1.6; }
+
+    .ai-block {
+        background:var(--surface-card);
+        border:1px solid var(--border-default);
+        border-radius:12px;
+        padding:13px 15px;
+        margin-bottom:10px;
+        font-size:.83rem;
+        animation:fadeLeft .6s ease both;
+        transition:box-shadow var(--transition);
+        line-height:1.6;
+    }
+    .ai-block:hover { box-shadow:var(--shadow-xs); }
+    .ai-block strong { color:var(--text-primary); }
+    .ai-block.insight { border-left:3px solid var(--green-primary); }
+    .ai-highlight { color:var(--green-primary); font-weight:700; }
+    .ai-sub { display:block; font-size:.74rem; color:var(--text-muted); margin-top:4px; }
+
+    /* ── HISTORY TABLE ────────────────────────── */
+    .history-table { width:100%; border-collapse:collapse; }
+    .history-table th { font-size:.72rem; text-transform:uppercase; letter-spacing:.07em; color:var(--text-muted); font-weight:700; padding:8px 12px; text-align:left; border-bottom:1px solid var(--border-default); }
+    .history-table td { font-size:.82rem; padding:10px 12px; color:var(--text-secondary); border-bottom:1px solid var(--surface-stripe); }
+    .history-table tr:last-child td { border-bottom:none; }
+    .history-table tr:hover td { background:var(--surface-stripe); }
+    .td-nss { font-weight:700; color:var(--green-primary) !important; }
+    .empty-history { text-align:center; padding:36px; color:var(--text-muted); font-size:.85rem; }
+
+    /* ── PILL TAG ─────────────────────────────── */
+    .tag-pill { padding:5px 13px; border-radius:var(--radius-pill); font-size:.72rem; font-weight:700; letter-spacing:.05em; display:inline-flex; align-items:center; gap:6px; border:1.5px solid; }
+    .tag-green { background:var(--green-light); border-color:rgba(46,125,50,.4); color:var(--green-primary); }
+    .tag-gray  { background:var(--surface-hover); border-color:var(--border-default); color:var(--text-secondary); }
+
+    /* ── CULTURE & ASSISTANT ADDITIONS ──────────────────────────── */
+    .culture-banner { display:flex; gap:10px; margin-bottom:20px; animation:fadeDown .6s ease both; flex-wrap:wrap; }
+    .culture-card { flex:1; min-width:200px; background:var(--surface-card); border:1px solid var(--border-default); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; box-shadow:var(--shadow-xs); }
+    .culture-icon { font-size:1.4rem; }
+    .culture-text h4 { font-size:.8rem; font-weight:700; color:var(--text-primary); margin-bottom:2px; }
+    .culture-text p { font-size:.7rem; color:var(--text-muted); }
+
+    .ai-rec-pillar { display:inline-flex; align-items:center; gap:4px; font-size:.65rem; padding:3px 8px; border-radius:var(--radius-pill); font-weight:700; margin-bottom:8px; }
+    .pillar-gente { background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; }
+    .pillar-foco { background:#e3f2fd; color:#1565c0; border:1px solid #bbdefb; }
+    .pillar-futuro { background:#f3e5f5; color:#7b1fa2; border:1px solid #e1bee7; }
+    
+    .ai-action { margin-top:8px; padding:8px 10px; background:var(--surface-stripe); border-left:2px solid var(--green-primary); border-radius:4px; font-size:.78rem; color:var(--text-secondary); font-weight:500; }
+
+    .sub-score-row { display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:.75rem; color:var(--text-secondary); }
+    .sub-score-bar { flex:1; height:6px; background:#e0e0e0; border-radius:3px; margin:0 10px; overflow:hidden; }
+    .sub-score-fill { height:100%; border-radius:3px; }
+
+    .script-box { background:var(--surface-stripe); border:1px solid var(--border-default); border-radius:8px; padding:12px; margin-bottom:10px; }
+    .script-box h4 { font-size:.8rem; color:var(--text-primary); margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+    .script-box p { font-size:.78rem; color:var(--text-secondary); font-style:italic; }
+
+    .action-plan-day { display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; background:var(--surface-card); padding:8px; border-radius:8px; border:1px solid var(--surface-stripe); }
+    .action-day-badge { background:var(--green-primary); color:#fff; font-size:.65rem; font-weight:700; padding:3px 8px; border-radius:4px; min-width:45px; text-align:center; }
+    .action-day-text { font-size:.78rem; color:var(--text-secondary); flex:1; }
+
+    .training-card { border:1px solid var(--border-default); border-radius:8px; padding:10px; display:flex; gap:10px; align-items:center; transition:var(--transition); cursor:pointer; margin-bottom:8px; background:var(--surface-card); }
+    .training-card:hover { border-color:var(--green-primary); background:var(--green-light); transform:translateY(-1px); }
+    .training-icon { font-size:1.2rem; }
+    .training-info h4 { font-size:.8rem; color:var(--text-primary); margin-bottom:2px; }
+    .training-info p { font-size:.7rem; color:var(--text-muted); }
+
+    .quote-box { text-align:center; padding:16px; background:linear-gradient(135deg, var(--green-light), #fff); border-radius:12px; border:1px dashed var(--green-border); margin-bottom:16px; }
+    .quote-text { font-family:var(--font-display); font-size:1.1rem; color:var(--green-primary); margin-bottom:8px; }
+    .quote-author { font-size:.75rem; color:var(--text-secondary); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+
+    /* ── FOOTER ───────────────────────────────── */
+    .nss-footer { margin-top:40px; background:var(--surface-card); border:1px solid var(--border-default); border-radius:var(--radius-card); overflow:hidden; box-shadow:var(--shadow-xs); }
+    .footer-cta-band { background:var(--green-primary); padding:18px 28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; }
+    .footer-cta-left { display:flex; align-items:center; gap:12px; }
+    .footer-cta-icon { width:38px; height:38px; border-radius:var(--radius-pill); background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .footer-cta-title { font-size:.9rem; font-weight:700; color:#fff; }
+    .footer-cta-sub   { font-size:.78rem; color:rgba(255,255,255,.75); margin-top:2px; }
+    .footer-body { padding:24px 28px 20px; }
+    .footer-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:20px; }
+    @media(max-width:640px){ .footer-grid{grid-template-columns:repeat(2,1fr)} }
+    .footer-col-title { font-size:.75rem; font-weight:800; color:var(--text-primary); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
+    .footer-link { display:block; font-size:.78rem; color:var(--text-link); text-decoration:none; margin-bottom:6px; line-height:1.5; transition:color var(--transition); }
+    .footer-link:hover { color:var(--green-primary); text-decoration:underline; }
+    .footer-bottom { padding-top:14px; border-top:1px solid var(--border-default); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:.72rem; color:var(--text-muted); }
+    .footer-logo { display:flex; align-items:center; gap:6px; font-weight:700; color:var(--green-primary); }
+    </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="topbar-brand">
+        <div class="logo-dot"></div>
+        NSS
+    </div>
+    <div class="topbar-right">
+        <div class="topbar-pill" onclick="voltarPaginaPrincipal()">← Voltar</div>
+        <div class="topbar-pill"><span class="dot"></span> IA Ativa</div>
+        <div class="topbar-pill" onclick="nssReset()">↺ Resetar</div>
+    </div>
+</div>
+
+<div class="nss-widget">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div>
+            <h1>Calculadora <em>NSS </em></h1>
+            <p>Cálculo, gráficos e inteligência artificial em uma única visão.</p>
+        </div>
+        <div class="header-tags">
+            <span class="tag-green">
+                <span style="width:6px;height:6px;border-radius:999px;background:var(--green-primary);animation:pulse 2s infinite;display:inline-block;"></span>
+                Tempo real
+            </span>
+            <span class="tag-gray" id="lastCalcTag" style="display:none;">–</span>
+        </div>
+    </div>
+
+    <!-- CULTURE BANNER -->
+    <div class="culture-banner">
+        <div class="culture-card">
+            <div class="culture-icon">💚</div>
+            <div class="culture-text">
+                <h4>Cuidamos de Gente</h4>
+                <p>Empatia e escuta ativa</p>
+            </div>
+        </div>
+        <div class="culture-card">
+            <div class="culture-icon">🎯</div>
+            <div class="culture-text">
+                <h4>Executamos com Foco</h4>
+                <p>Metas e ação rápida</p>
+            </div>
+        </div>
+        <div class="culture-card">
+            <div class="culture-icon">🚀</div>
+            <div class="culture-text">
+                <h4>Construímos o Futuro</h4>
+                <p>Inovação e melhoria</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('dados',this)">📊 Dados & Resultado</button>
+        <button class="tab-btn" onclick="switchTab('graficos',this)">📈 Gráficos</button>
+        <button class="tab-btn" onclick="switchTab('ia',this)">🤖 IA Estratégica</button>
+        <button class="tab-btn" onclick="switchTab('assistente',this)">🧠 Assistente IA</button>
+        <button class="tab-btn" onclick="switchTab('historico',this)">🕑 Histórico</button>
+    </div>
+
+    <!-- TAB: DADOS -->
+    <div id="tab-dados" class="tab-panel active">
+        <div class="grid-2">
+
+            <!-- ENTRADA -->
+            <div class="nss-card accented">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">📋</div> Dados do Período</div>
+                    <span class="card-meta">Preencha os campos</span>
+                </div>
+                <p class="nss-subtitle">Insira os números do atendimento para o cenário atual.</p>
+
+                <div class="fields-grid">
+                    <div class="nss-field">
+                        <label class="nss-label">Total de Interações <span class="label-chip chip-gray">100%</span></label>
+                        <div class="input-wrap">
+                            <input type="number" class="nss-input nss-calc" data-field="totalInteracoes" min="0" step="1" placeholder="Ex: 265">
+                            <span class="input-icon">💬</span>
+                        </div>
+                    </div>
+                    <div class="nss-field">
+                        <label class="nss-label">Promotoras <span class="label-chip chip-green">Nota 5</span></label>
+                        <div class="input-wrap">
+                            <input type="number" class="nss-input nss-calc" data-field="promotoras" min="0" step="1" placeholder="Ex: 30">
+                            <span class="input-icon">⭐</span>
+                        </div>
+                    </div>
+                    <div class="nss-field">
+                        <label class="nss-label">Neutras <span class="label-chip chip-gray">Nota 4</span></label>
+                        <div class="input-wrap">
+                            <input type="number" class="nss-input nss-calc" data-field="neutras" min="0" step="1" placeholder="Ex: 2">
+                            <span class="input-icon">😐</span>
+                        </div>
+                    </div>
+                    <div class="nss-field">
+                        <label class="nss-label">Detratoras <span class="label-chip chip-red">Notas 3–1</span></label>
+                        <div class="input-wrap">
+                            <input type="number" class="nss-input nss-calc" data-field="detratoras" min="0" step="1" placeholder="Ex: 1">
+                            <span class="input-icon">⚠️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="sep">
+
+                <div class="card-title" style="margin-bottom:14px;"><div class="card-icon">🎯</div> Metas</div>
+                <p class="nss-subtitle">Defina o alvo para NSS e taxa de pesquisa.</p>
+
+                <div class="fields-grid">
+                    <div class="nss-field">
+                        <label class="nss-label">Meta NSS <span class="label-chip chip-green">0 – 1</span></label>
+                        <input type="number" class="nss-input nss-calc" data-field="metaNSS" min="0" max="1" step="0.01" placeholder="Ex: 0.95">
+                    </div>
+                    <div class="nss-field">
+                        <label class="nss-label">Meta Pesquisa <span class="label-chip chip-green">0 – 1</span></label>
+                        <input type="number" class="nss-input nss-calc" data-field="metaPesquisa" min="0" max="1" step="0.01" placeholder="Ex: 0.13">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="nss-btn nss-btn-primary" id="calcBtn" onclick="nssCalculateUI()">
+                        <span class="btn-icon">🔄</span> Recalcular Cenário
+                    </button>
+                    <button class="nss-btn nss-btn-secondary" onclick="nssReset()">Resetar padrão</button>
+                </div>
+            </div>
+
+            <!-- RESULTADO -->
+            <div class="nss-card">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">📈</div> Resultados</div>
+                    <span class="card-meta" id="resultPeriod">–</span>
+                </div>
+
+                <div class="grid-3">
+                    <div class="kpi-card" style="--kpi-color:#4caf50">
+                        <div class="kpi-row"><span class="kpi-label">Avaliações</span><span class="kpi-badge badge-gray" id="kpiTotalBadge">–</span></div>
+                        <div class="kpi-value" id="nssOutputTotal">0</div>
+                        <div class="kpi-trend">P + N + D</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color:#2e7d32">
+                        <div class="kpi-row"><span class="kpi-label">NSS Atual</span><span class="kpi-badge" id="kpiNSSBadge">–</span></div>
+                        <div class="kpi-value" id="nssOutputNSS">0%</div>
+                        <div class="kpi-trend">Meta: <strong id="nssMetaLabel">–</strong></div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color:#42a5f5">
+                        <div class="kpi-row"><span class="kpi-label">Pesquisa</span><span class="kpi-badge" id="kpiPesquisaBadge">–</span></div>
+                        <div class="kpi-value" id="nssOutputPesquisa">0%</div>
+                        <div class="kpi-trend">Meta: <strong id="pesquisaMetaLabel">–</strong></div>
+                    </div>
+                </div>
+
+                <div class="progress-block">
+                    <div class="progress-header">
+                        <span class="progress-label">Progresso em relação à meta NSS</span>
+                        <span class="progress-pct" id="nssProgressText">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="nssProgressBar" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <div id="nssRecommendationBox"></div>
+
+                <hr class="sep">
+
+                <div class="stat-mini">
+                    <div class="stat-mini-icon" style="background:var(--green-light)">📊</div>
+                    <div><div class="stat-mini-label">Sem avaliação</div><div class="stat-mini-val" id="statSemAval">–</div></div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-icon" style="background:#fef2f2">⚠️</div>
+                    <div><div class="stat-mini-label">% de Detratores</div><div class="stat-mini-val" id="statDetratorRatio">–</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: GRÁFICOS -->
+    <div id="tab-graficos" class="tab-panel">
+        <div class="nss-card accented">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon">📈</div> Evolução do NSS</div>
+                <span class="card-meta">Últimos cálculos</span>
+            </div>
+            <p class="nss-subtitle">Simulação de NSS por dia da semana, acumulando +5 promotoras a cada dia. A linha vermelha pontilhada indica o NSS base atual.</p>
+            <div class="chart-wrap"><canvas id="nssChartMontanha"></canvas></div>
+        </div>
+
+        <div class="nss-card section-gap">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon">🍩</div> Distribuição de Avaliações</div>
+                <span class="card-meta">Proporcional</span>
+            </div>
+            <p class="nss-subtitle">Comparativo entre Promotoras, Neutras, Detratoras e interações sem avaliação.</p>
+            <div class="chart-wrap"><canvas id="nssChartDistribuicao"></canvas></div>
+        </div>
+    </div>
+
+    <!-- TAB: IA -->
+    <div id="tab-ia" class="tab-panel">
+        <div class="grid-2-ai">
+            <div class="nss-card accented">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">🤖</div> Recomendações Inteligentes</div>
+                </div>
+                <p class="nss-subtitle">A IA lê seu cenário e sugere ações para subir o indicador no curto prazo.</p>
+                <div class="ai-badge-row" id="aiStatusBadges"></div>
+                <div id="aiRecommendations"></div>
+            </div>
+
+            <div class="nss-card accented">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">🔮</div> Visão Estratégica</div>
+                </div>
+                <p class="nss-subtitle">Projeções e análise profunda baseada em padrões detectados.</p>
+                <div id="aiPrediction"></div>
+                <div id="aiQualityBlock"></div>
+                <div id="aiRiskBlock"></div>
+                <div id="aiScenario"></div>
+                <div id="aiInsights"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: ASSISTENTE IA -->
+    <div id="tab-assistente" class="tab-panel">
+        <div class="grid-2-ai">
+            <div class="nss-card accented">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">🧠</div> Seu Assistente IA</div>
+                    <button class="nss-btn nss-btn-ghost" onclick="gerarRelatorioCoaching()">Gerar Relatório de Coaching</button>
+                </div>
+                <div class="quote-box" id="assistenteQuote">
+                    <!-- Gerado via JS -->
+                </div>
+                
+                <h3 class="card-title" style="margin-bottom:10px;font-size:.85rem;">Scripts de Abordagem</h3>
+                <div id="assistenteScripts">
+                    <!-- Gerado via JS -->
+                </div>
+
+                <hr class="sep">
+
+                <h3 class="card-title" style="margin-bottom:10px;font-size:.85rem;">Treinamento Rápido</h3>
+                <div class="training-card" onclick="alert('Dica 💚 Cuidamos de Gente:\nSempre sorria e chame o cliente pelo nome logo na saudação inicial. Isso quebra o gelo e cria conexão instantânea.')">
+                    <div class="training-icon">💚</div>
+                    <div class="training-info">
+                        <h4>Acolhimento Imediato</h4>
+                        <p>1 min • Como iniciar um atendimento empático</p>
+                    </div>
+                </div>
+                <div class="training-card" onclick="alert('Dica 🎯 Executamos com Foco:\nRevise as metas da semana toda manhã e alinhe 1 foco principal com a equipe antes de abrir a loja.')">
+                    <div class="training-icon">🎯</div>
+                    <div class="training-info">
+                        <h4>Alinhamento Matinal</h4>
+                        <p>2 min • Foco no que importa hoje</p>
+                    </div>
+                </div>
+                <div class="training-card" onclick="alert('Dica 🚀 Construímos o Futuro:\nPeça a um promotor que compartilhe uma história de sucesso na reunião de equipe para inspirar os demais.')">
+                    <div class="training-icon">🚀</div>
+                    <div class="training-info">
+                        <h4>Inovação Compartilhada</h4>
+                        <p>3 min • Espalhando boas práticas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nss-card accented">
+                <div class="card-header">
+                    <div class="card-title"><div class="card-icon">📅</div> Plano de Ação Semanal</div>
+                </div>
+                <p class="nss-subtitle">Tarefas sugeridas para melhorar seus indicadores, alinhadas à cultura.</p>
+                <div id="assistentePlano">
+                    <!-- Gerado via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: HISTÓRICO -->
+    <div id="tab-historico" class="tab-panel">
+        <div class="nss-card accented">
+            <div class="card-header">
+                <div class="card-title"><div class="card-icon">🕑</div> Histórico de Cálculos</div>
+                <button class="nss-btn nss-btn-ghost" onclick="clearHistory()">Limpar</button>
+            </div>
+            <p class="nss-subtitle">Registros dos últimos 20 cálculos realizados nesta sessão.</p>
+            <div id="historyContainer"><div class="empty-history">Nenhum cálculo registrado ainda.</div></div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="nss-footer">
+        <div class="footer-cta-band">
+            <div class="footer-cta-left">
+                <div class="footer-cta-icon">🎧</div>
+                <div>
+                    <div class="footer-cta-title">Dúvidas</div>
+                    <div class="footer-cta-sub">Confira as dúvidas.</div>
+                </div>
+            </div>
+
+        </div>
+        <div class="footer-body">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-col-title">Sobre o NSS</div>
+                    <a class="footer-link" href="#" onclick="footerOQueEhNSS();return false;">O que é NSS?</a>
+                    <a class="footer-link" href="#" onclick="footerComoCalcular();return false;">Como calcular</a>
+                    <a class="footer-link" href="#" onclick="footerBenchmarks();return false;">Benchmarks</a>
+                    <a class="footer-link" href="#" onclick="footerMetodologia();return false;">Metodologia</a>
+                </div>
+                <div>
+                    <div class="footer-col-title">Recursos</div>
+                    <a class="footer-link" href="#" onclick="footerExportarDados();return false;">Exportar dados</a>
+                    <a class="footer-link" href="#" onclick="footerHistorico();return false;">Histórico</a>
+                    <a class="footer-link" href="#" onclick="footerSimulacoes();return false;">Simulações</a>
+                    <a class="footer-link" href="#" onclick="footerRelatorios();return false;">Relatórios</a>
+                </div>
+                <div>
+                    <div class="footer-col-title">Inteligência IA</div>
+                    <a class="footer-link" href="#" onclick="footerRecomendacoes();return false;">Recomendações</a>
+                    <a class="footer-link" href="#" onclick="footerPredicao();return false;">Predição de tendências</a>
+                    <a class="footer-link" href="#" onclick="footerScoreQualidade();return false;">Score de qualidade</a>
+                </div>
+                <div>
+                    <div class="footer-col-title">Suporte</div>
+                    <a class="footer-link" href="#" onclick="footerDocumentacao();return false;">Documentação</a>
+                    <a class="footer-link" href="#" onclick="footerContato();return false;">Contato</a>
+                    <a class="footer-link" href="#" onclick="footerPrivacidade();return false;">Política de privacidade</a>
+                    <a class="footer-link" href="#" onclick="footerPortalTitular();return false;">Portal do Titular</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-logo">● NSS </div>
+                <span>Slot livre — pagamentos, selos, redes sociais</span>
+                <span>Slot livre — logos da marca</span>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /nss-widget -->
+
+<script>
+    let nssState = {
+        totalInteracoes:265, promotoras:30, neutras:2, detratoras:1,
+        metaNSS:.95, metaPesquisa:.13,
+        history:[], nssValues:[], historytime:[]
+    };
+    let nssCharts = {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.nss-calc').forEach(inp => {
+            inp.value = nssState[inp.dataset.field];
+            inp.addEventListener('input', function(){ nssState[this.dataset.field] = parseFloat(this.value)||0; });
+        });
+        nssCalculate();
+    });
+
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.getElementById('tab-'+id).classList.add('active');
+        btn.classList.add('active');
+        if(id==='graficos') setTimeout(nssUpdateCharts,50);
+        if(id==='historico') renderHistory();
+    }
+
+    function nssCalculateUI() {
+        const btn = document.getElementById('calcBtn');
+        btn.classList.add('loading');
+        btn.querySelector('.btn-icon').textContent='⟳';
+        setTimeout(()=>{ nssCalculate(); btn.classList.remove('loading'); btn.querySelector('.btn-icon').textContent='🔄'; },420);
+    }
+
+    function nssCalculate() {
+        const {totalInteracoes,promotoras,neutras,detratoras,metaNSS,metaPesquisa} = nssState;
+        const total = promotoras+neutras+detratoras;
+        const nss   = total>0 ? (promotoras-detratoras)/total : 0;
+        const pesq  = totalInteracoes>0 ? total/totalInteracoes : 0;
+        const np=nss*100, pp=pesq*100;
+
+        animateValue('nssOutputTotal',total);
+        animateValue('nssOutputNSS',np,'%');
+        animateValue('nssOutputPesquisa',pp,'%');
+        document.getElementById('nssMetaLabel').textContent=(metaNSS*100).toFixed(0)+'%';
+        document.getElementById('pesquisaMetaLabel').textContent=(metaPesquisa*100).toFixed(0)+'%';
+
+        setBadge('kpiNSSBadge',     np>=metaNSS*100  ? ['badge-green','✓ Meta']  : ['badge-red','↓ Abaixo']);
+        setBadge('kpiPesquisaBadge',pp>=metaPesquisa*100 ? ['badge-green','✓ Meta'] : ['badge-amber','Atenção']);
+        setBadge('kpiTotalBadge',   ['badge-gray', total+' resp.']);
+
+        const prog = metaNSS>0 ? Math.min((nss/metaNSS)*100,100) : 0;
+        animateProgressBar(prog);
+        document.getElementById('nssProgressText').textContent=prog.toFixed(0)+'%';
+
+        const now=new Date();
+        document.getElementById('resultPeriod').textContent=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        const ltag=document.getElementById('lastCalcTag');
+        ltag.style.display='inline-flex';
+        ltag.textContent='Último: '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+        const semAval=Math.max(0,totalInteracoes-total);
+        const detR=total>0?((detratoras/total)*100).toFixed(1)+'%':'–';
+        document.getElementById('statSemAval').textContent=semAval>0?semAval+' interações':'Nenhuma ✓';
+        document.getElementById('statDetratorRatio').textContent=detR;
+
+        renderRecommendation(nss,total,metaNSS,neutras,detratoras);
+        nssAddToHistory(nss,pesq);
+        nssUpdateCharts();
+        generateAI(nss,pesq);
+    }
+
+    function setBadge(id,[cls,txt]){ const el=document.getElementById(id); el.className='kpi-badge '+cls; el.textContent=txt; }
+
+    function renderRecommendation(nss,total,meta,neutras,detratoras){
+        const box=document.getElementById('nssRecommendationBox');
+        let h='';
+        if(nss>=meta && total>0){
+            h=`<div class="result-box success"><span class="rb-icon">✅</span><div><strong>Meta de NSS atingida!</strong> Você está na zona verde. Foque em <span class="ai-highlight">manter consistência</span> e evitar oscilações.</div></div>`;
+        } else if(total===0){
+            h=`<div class="result-box info"><span class="rb-icon">ℹ️</span><div><strong>Sem avaliações ainda.</strong> Preencha os dados para ativar as recomendações.</div></div>`;
+        } else {
+            const pNec=meta>=1?0:Math.max(0,Math.ceil((((neutras+detratoras)*meta)+detratoras)/(1-meta)));
+            const gap=(meta-nss)*100;
+            h=`<div class="result-box warning"><span class="rb-icon">⚠️</span><div><strong>Meta não atingida.</strong> Gap: <span class="ai-highlight">${gap.toFixed(1)} p.p.</span><br>Você precisa de ~<span class="ai-highlight">${pNec} promotoras</span> para atingir ${(meta*100).toFixed(0)}%.</div></div>`;
+        }
+        box.innerHTML=h;
+    }
+
+    function animateValue(id,final,suf=''){
+        const el=document.getElementById(id);
+        const dur=700,s=performance.now();
+        const tick=t=>{ const p=Math.min((t-s)/dur,1); el.textContent=suf?(final*p).toFixed(2)+suf:Math.floor(final*p); if(p<1)requestAnimationFrame(tick); };
+        requestAnimationFrame(tick);
+    }
+    function animateProgressBar(tgt){
+        const bar=document.getElementById('nssProgressBar');
+        const from=parseFloat(bar.style.width)||0;
+        const dur=900,s=performance.now();
+        const tick=t=>{ const p=Math.min((t-s)/dur,1); bar.style.width=(from+(tgt-from)*p)+'%'; if(p<1)requestAnimationFrame(tick); };
+        requestAnimationFrame(tick);
+    }
+
+    function nssUpdateCharts(){
+        const c1=document.getElementById('nssChartMontanha'); if(!c1)return;
+        if(nssCharts.m) nssCharts.m.destroy();
+        const dias=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+        const dayValues=dias.map((_,i)=>{const p=nssState.promotoras+(i*5),t=p+nssState.neutras+nssState.detratoras;return t>0?parseFloat(((p-nssState.detratoras)/t*100).toFixed(2)):0;});
+        const baseNSS=(nssState.promotoras+nssState.neutras+nssState.detratoras)>0?parseFloat(((nssState.promotoras-nssState.detratoras)/(nssState.promotoras+nssState.neutras+nssState.detratoras)*100).toFixed(2)):0;
+        nssCharts.m=new Chart(c1,{type:'line',data:{labels:dias,datasets:[{label:'NSS com +5 promotoras/dia (%)',data:dayValues,borderColor:'#2e7d32',backgroundColor:'rgba(46,125,50,.10)',fill:true,tension:.45,pointRadius:5,pointBackgroundColor:'#2e7d32',pointBorderColor:'#fff',pointBorderWidth:2},{label:'NSS Base Atual (%)',data:Array(7).fill(baseNSS),borderColor:'#ef5350',backgroundColor:'transparent',fill:false,tension:0,pointRadius:0,borderDash:[6,4],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#4b5563',font:{size:11,family:'DM Sans'}}},tooltip:{callbacks:{label(ctx){return`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`}}}},scales:{y:{min:0,max:100,ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'rgba(226,228,224,.8)'}},x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'rgba(226,228,224,.8)'}}}}});
+
+        const c2=document.getElementById('nssChartDistribuicao'); if(!c2)return;
+        if(nssCharts.d) nssCharts.d.destroy();
+        const {promotoras,neutras,detratoras,totalInteracoes}=nssState;
+        const sem=Math.max(0,totalInteracoes-(promotoras+neutras+detratoras));
+        nssCharts.d=new Chart(c2,{type:'doughnut',data:{labels:['Promotoras','Neutras','Detratoras','Sem avaliação'],datasets:[{data:[promotoras,neutras,detratoras,sem],backgroundColor:['#4caf50','#bdbdbd','#ef5350','#64b5f6'],borderColor:'#fff',borderWidth:3,hoverOffset:10}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{labels:{color:'#4b5563',font:{size:11,family:'DM Sans'}}},tooltip:{callbacks:{label(ctx){const v=ctx.parsed||0,t=ctx.chart._metasets[0].total||0,pct=t>0?((v/t)*100).toFixed(1):0;return`${ctx.label}: ${v} (${pct}%)`;}}}}}}); }
+
+    function generateAI(nss,pesq){
+        const {promotoras,neutras,detratoras,metaNSS,metaPesquisa,totalInteracoes}=nssState;
+        const np=nss*100,pp=pesq*100,total=promotoras+neutras+detratoras;
+        const sem=Math.max(0,totalInteracoes-total),detR=total>0?(detratoras/total)*100:0;
+
+        let badges='';
+        if(np>=80&&pp>=15)  badges+='<div class="ai-badge good">🥇 Excelência</div>';
+        else if(np>=60)     badges+='<div class="ai-badge good">✅ Saudável</div>';
+        else if(np>=40)     badges+='<div class="ai-badge warn">⚠️ Atenção</div>';
+        else                badges+='<div class="ai-badge warn">🚨 Crítico</div>';
+        if(pp<8)            badges+='<div class="ai-badge warn">📉 Baixo Volume</div>';
+        else if(pp>=metaPesquisa*100) badges+='<div class="ai-badge good">📊 Ótima Pesquisa</div>';
+        
+        // Índice de Humanização
+        const indHum = total > 0 ? (promotoras / total * 100).toFixed(1) : 0;
+        badges += `<div class="ai-badge good" style="border-color:#4caf50;">💚 Índice Humanização: ${indHum}%</div>`;
+        
+        document.getElementById('aiStatusBadges').innerHTML=badges;
+
+        let recs=[];
+        if(promotoras<neutras+detratoras)
+            recs.push({pillar:'gente', pLabel:'💚 Cuidamos de Gente', t:'Aumentar Promotoras',b:`Você tem <span class="ai-highlight">${promotoras} promotoras</span> vs <span class="ai-highlight">${neutras+detratoras}</span> não-promotoras. Crie <strong>momentos de encantamento</strong>.`, a:'Foque na escuta ativa e demonstre empatia logo na entrada.'});
+        else
+            recs.push({pillar:'futuro', pLabel:'🚀 Construímos o Futuro', t:'Manter o Que Funciona',b:`Proporção positiva de promotoras. Transforme essas práticas em <strong>processos oficiais</strong>.`, a:'Compartilhe o modelo de sucesso na próxima reunião de equipe.'});
+        if(detratoras>promotoras*.2)
+            recs.push({pillar:'foco', pLabel:'🎯 Executamos com Foco', t:'Reduzir Detratoras',b:`<span class="ai-highlight">${detratoras} detratores</span>. Crie <strong>fluxo de recuperação</strong>: contato em até 24h e escuta qualificada.`, a:'Acompanhe o indicador diariamente e faça plano de ação para os feedbacks.'});
+        if(pesq<.1)
+            recs.push({pillar:'futuro', pLabel:'🚀 Construímos o Futuro', t:'Aumentar Taxa de Pesquisa',b:`Taxa em <span class="ai-highlight">${pp.toFixed(1)}%</span>. Teste <strong>WhatsApp e SMS</strong> com convite direto da equipe.`, a:'Inove nos canais de comunicação com o cliente.'});
+        if(neutras>promotoras*.3)
+            recs.push({pillar:'gente', pLabel:'💚 Cuidamos de Gente', t:'Converter Neutros',b:`<span class="ai-highlight">${neutras} neutros</span>. Ajustes em empatia podem converter esse grupo com baixo esforço.`, a:'Treine a equipe para um atendimento mais acolhedor e humanizado.'});
+        
+        document.getElementById('aiRecommendations').innerHTML=recs.map(r=>`
+            <div class="ai-rec">
+                <span class="ai-rec-pillar pillar-${r.pillar}">${r.pLabel}</span>
+                <div class="ai-rec-title">${r.t}</div>
+                <div class="ai-rec-body">${r.b}</div>
+                <div class="ai-action"><strong>Ação:</strong> ${r.a}</div>
+            </div>`).join('')||'<p style="color:var(--text-muted);font-size:.84rem;padding:8px 0;">Nenhuma recomendação crítica — continue assim! 🎉</p>';
+
+        const pred=predictNext(nss);
+        const dir=pred>np?'tendência de alta':(pred<np?'tendência de queda':'estável');
+        const arr=pred>np?'📈':(pred<np?'📉':'➖');
+        document.getElementById('aiPrediction').innerHTML=`<div class="ai-block"><strong>${arr} Próximo Período (7 dias)</strong><br>NSS estimado: <span class="ai-highlight">${pred.toFixed(2)}%</span><span class="ai-sub">Indica <strong>${dir}</strong>. Pequenas mudanças alteram rapidamente.</span></div>`;
+
+        const sc=Math.min(100,Math.max(0,Math.round(np*.7+Math.min(pp,20)*1.5)));
+        let sl='Crítico',sco='#e65100';
+        if(sc>=80){sl='Excelente';sco='#2e7d32';}else if(sc>=60){sl='Bom';sco='#4caf50';}else if(sc>=40){sl='Em evolução';sco='#f9a825';}
+        
+        // Sub-scores
+        const sGente = Math.min(100, Math.round(indHum));
+        const sFoco = Math.min(100, Math.round(pp * 5));
+        const sFuturo = Math.min(100, Math.round(np));
+
+        document.getElementById('aiQualityBlock').innerHTML=`
+            <div class="ai-block">
+                <strong>Score de Qualidade:</strong> <span class="ai-highlight" style="color:${sco};">${sc}/100</span> <span style="font-size:.78rem;color:var(--text-muted);">(${sl})</span>
+                <div style="margin-top:10px; border-top:1px solid var(--border-default); padding-top:10px;">
+                    <div class="sub-score-row"><span>💚 Gente</span> <span>${sGente}%</span></div>
+                    <div class="sub-score-bar"><div class="sub-score-fill" style="width:${sGente}%; background:#4caf50;"></div></div>
+                    <div class="sub-score-row"><span>🎯 Foco</span> <span>${sFoco}%</span></div>
+                    <div class="sub-score-bar"><div class="sub-score-fill" style="width:${sFoco}%; background:#2196f3;"></div></div>
+                    <div class="sub-score-row"><span>🚀 Futuro</span> <span>${sFuturo}%</span></div>
+                    <div class="sub-score-bar"><div class="sub-score-fill" style="width:${sFuturo}%; background:#9c27b0;"></div></div>
+                </div>
+            </div>`;
+
+        let rl='Baixo',rd='Risco de queda brusca é baixo. Mantenha o padrão.',rbg='#e8f5e9',rb='rgba(46,125,50,.3)',rc='#2e7d32', ract='Continue acompanhando os indicadores semanais.';
+        if(np<50||detR>25){rl='Alto';rd='Muitos detratores ou NSS crítico. Plano tático imediato.';rbg='#fef2f2';rb='rgba(198,40,40,.35)';rc='#c62828'; ract='Fazer reunião de urgência para entender dores principais e criar script de contorno.';}
+        else if(np<70||detR>15){rl='Médio';rd='Sinais de alerta. Se nada mudar, NSS pode cair.';rbg='#fffde7';rb='rgba(245,127,23,.35)';rc='#e65100'; ract='Realizar treinamento de escuta ativa na próxima semana.';}
+        document.getElementById('aiRiskBlock').innerHTML=`<div class="ai-block" style="background:${rbg};border-color:${rb};color:${rc};">
+            <strong>Nível de Risco: ${rl}</strong><span class="ai-sub" style="color:${rc};opacity:.8;">${rd}</span>
+            <div class="ai-action" style="margin-top:6px; border-color:${rc}; background:rgba(255,255,255,0.5);"><strong>Plano:</strong> ${ract}</div>
+        </div>`;
+
+        const simOt = simPromoters(10);
+        const simRe = simPromoters(5);
+        const simPe = simPromoters(-2); // -2 promotoras
+        document.getElementById('aiScenario').innerHTML=`
+            <div class="ai-block" style="background:#e3f2fd;border-color:rgba(33,150,243,.3);">
+                <strong>Simulações Múltiplas</strong>
+                <div class="sub-score-row" style="color:#1565c0"><span>Cenário Otimista (+10 promotores):</span> <strong>${simOt.toFixed(2)}%</strong></div>
+                <div class="sub-score-row" style="color:#1565c0"><span>Cenário Realista (+5 promotores):</span> <strong>${simRe.toFixed(2)}%</strong></div>
+                <div class="sub-score-row" style="color:#1565c0"><span>Cenário Pessimista (-2 promotores):</span> <strong>${simPe.toFixed(2)}%</strong></div>
+            </div>`;
+
+        document.getElementById('aiInsights').innerHTML=`<div class="ai-block insight">${insight(nss,pesq,sem,detR)}</div>`;
+        
+        // Atualiza Assistente IA
+        updateAssistente(np, pp, indHum, detR);
+    }
+
+    function updateAssistente(np, pp, indHum, detR) {
+        // Frase motivacional
+        const quotes = [
+            {q: "O acolhimento genuíno transforma uma visita em fidelidade.", a: "Cuidamos de Gente 💚"},
+            {q: "Acompanhar os números não é matemática, é garantir que nossa promessa seja cumprida.", a: "Executamos com Foco 🎯"},
+            {q: "Um feedback crítico hoje é o processo inovador de amanhã.", a: "Construímos o Futuro 🚀"}
+        ];
+        let idx = indHum < 60 ? 0 : (pp < 10 ? 1 : 2);
+        document.getElementById('assistenteQuote').innerHTML = `
+            <div class="quote-text">"${quotes[idx].q}"</div>
+            <div class="quote-author">— ${quotes[idx].a}</div>`;
+
+        // Scripts
+        let scripts = '';
+        if (detR > 15) {
+            scripts += `
+            <div class="script-box">
+                <h4>🎯 Cliente Insatisfeito (Detrator)</h4>
+                <p>"Peço desculpas pela experiência que o(a) senhor(a) teve. Nosso compromisso é cuidar bem de quem nos procura. Como podemos resolver isso juntos agora?"</p>
+            </div>`;
+        }
+        if (np < 80) {
+            scripts += `
+            <div class="script-box">
+                <h4>💚 Cliente Neutro</h4>
+                <p>"O(a) senhor(a) encontrou tudo o que precisava? Ficou alguma dúvida sobre o uso do medicamento? Estamos aqui para garantir seu bem-estar."</p>
+            </div>`;
+        }
+        scripts += `
+        <div class="script-box">
+            <h4>🚀 Convite para Pesquisa</h4>
+            <p>"Sua opinião nos ajuda a construir um futuro melhor para nossa farmácia. O(a) senhor(a) poderia avaliar nosso atendimento no link do recibo? Leva só 1 minuto!"</p>
+        </div>`;
+        document.getElementById('assistenteScripts').innerHTML = scripts;
+
+        // Plano de Ação
+        document.getElementById('assistentePlano').innerHTML = `
+            <div class="action-plan-day">
+                <div class="action-day-badge">Seg</div>
+                <div class="action-day-text"><strong>Reunião de Alinhamento:</strong> Compartilhar metas de NSS e focar em <em>Cuidar de Gente</em>.</div>
+            </div>
+            <div class="action-plan-day">
+                <div class="action-day-badge">Ter</div>
+                <div class="action-day-text"><strong>Blitz do Atendimento:</strong> Observar 3 atendimentos e dar feedback positivo imediato.</div>
+            </div>
+            <div class="action-plan-day">
+                <div class="action-day-badge">Qua</div>
+                <div class="action-day-text"><strong>Foco na Pesquisa:</strong> Bater meta diária de 15% de avaliações coletadas.</div>
+            </div>
+            <div class="action-plan-day">
+                <div class="action-day-badge">Qui</div>
+                <div class="action-day-text"><strong>Recuperação:</strong> Ligar para 2 clientes detratores da semana para reverter a experiência.</div>
+            </div>
+            <div class="action-plan-day">
+                <div class="action-day-badge">Sex</div>
+                <div class="action-day-text"><strong>Reconhecimento:</strong> Celebrar o colaborador com mais promotores na semana.</div>
+            </div>
+        `;
+    }
+
+    function gerarRelatorioCoaching() {
+        alert('📊 Gerando Relatório de Coaching...\n\n(Simulação) Um relatório em PDF com o Plano Semanal, Scripts personalizados para a equipe e os Scores de Cultura será gerado e enviado para o gestor.');
+    }
+
+    function predictNext(nss){const c=nss*100;if(nssState.nssValues.length<3)return c;const r=nssState.nssValues.slice(0,3);return c+(r[0]-r[2])/2;}
+    function simPromoters(ex){const {promotoras,neutras,detratoras}=nssState,t=promotoras+neutras+detratoras;return(t+ex)>0?((promotoras+ex-detratoras)/(t+ex))*100:0;}
+
+    function insight(nss,pesq,sem,detR){
+        const np=nss*100,pp=pesq*100;
+        let blk='',itens=[];
+        if(np>=90&&pp>=15){blk='🚀 <strong>Excelência!</strong> NSS muito alto com ótima taxa. Foque em <strong>sofisticação</strong> e amplificação de boas práticas.';itens=['Mapear motivos de elogio e criar scripts.','Rituais de reconhecimento para top performers.','Usar NSS em metas individuais.'];}
+        else if(np<50&&pp>=10){blk='⚠️ <strong>NSS Crítico.</strong> Plano de choque 30 dias: entrevistas com detratores e revisão de SLA.';itens=['Listar 3 principais reclamações.','Criar fluxo de recuperação de detratores.','Reforçar treinamento de escuta ativa.'];}
+        else if(pp<8&&np>0){blk='📱 <strong>Baixa taxa de pesquisa.</strong> Foque em aumentar participação antes de ajustar processos.';itens=['Testar WhatsApp, SMS e e-mail curto.','Encurtar pesquisa para 1-2 perguntas.','Mensagem humana explicando importância do feedback.'];}
+        else{blk='🧭 <strong>Momento de calibrar.</strong> Use estes dados como base. Repita após implementar mudanças.';itens=['Meta para 30 dias (ex: reduzir detratores 20%).','Garantir convite em todos atendimentos.','Compartilhar NSS com a equipe.'];}
+        if(sem>0)blk+=`<br><br>📉 <span class="ai-highlight">${sem} interações sem avaliação</span>. Cada ponto aumenta a confiabilidade.`;
+        return`${blk}<br><br><strong>Alavancas Estratégicas:</strong><ul style="margin-top:6px;padding-left:18px;font-size:.82rem;color:var(--text-secondary);">${itens.map(i=>`<li style="margin-bottom:4px">${i}</li>`).join('')}</ul>`;
+    }
+
+    function nssAddToHistory(nss,pesq){
+        const now=new Date();
+        nssState.historytime.unshift(now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
+        nssState.nssValues.unshift(nss*100);
+        nssState.history.unshift({nss:(nss*100).toFixed(2),pesquisa:(pesq*100).toFixed(2),timestamp:now.toLocaleString('pt-BR'),p:nssState.promotoras,n:nssState.neutras,d:nssState.detratoras});
+        if(nssState.history.length>20){nssState.history.pop();nssState.nssValues.pop();nssState.historytime.pop();}
+    }
+
+    function renderHistory(){
+        const c=document.getElementById('historyContainer');
+        if(!nssState.history.length){c.innerHTML='<div class="empty-history">Nenhum cálculo registrado ainda.<br>Volte à aba <strong>Dados & Resultado</strong> e recalcule.</div>';return;}
+        c.innerHTML=`<table class="history-table"><thead><tr><th>Data/Hora</th><th>NSS</th><th>Pesquisa</th><th>Promotoras</th><th>Neutras</th><th>Detratoras</th></tr></thead><tbody>${nssState.history.map(h=>`<tr><td>${h.timestamp}</td><td class="td-nss">${h.nss}%</td><td>${h.pesquisa}%</td><td>${h.p}</td><td>${h.n}</td><td>${h.d}</td></tr>`).join('')}</tbody></table>`;
+    }
+
+    function clearHistory(){if(confirm('Limpar todo o histórico?')){nssState.history=[];nssState.nssValues=[];nssState.historytime=[];renderHistory();nssUpdateCharts();}}
+
+    function nssReset(){
+        if(confirm('Resetar todos os valores para o padrão?')){
+            Object.assign(nssState,{totalInteracoes:265,promotoras:30,neutras:2,detratoras:1,metaNSS:.95,metaPesquisa:.13,history:[],nssValues:[],historytime:[]});
+            document.querySelectorAll('.nss-calc').forEach(el=>{el.value=nssState[el.dataset.field];});
+            nssCalculate();
+        }
+    }
+
+    /* ── VOLTAR ────────────────────────────────── */
+    function voltarPaginaPrincipal(){
+        window.location.href='../index.html';
+    }
+
+    /* ── FOOTER — SOBRE O NSS ─────────────────── */
+    function footerOQueEhNSS(){
+        alert('📊 O que é NSS?\n\nO NSS (Net Satisfaction Score) é um indicador que mede o nível de satisfação líquido dos clientes atendidos.\n\nFórmula: NSS = (Promotoras − Detratoras) ÷ Total de Avaliações\n\nResultado entre -100% e +100%:\n• ≥ 75% → Excelência\n• 50–74% → Saudável\n• 25–49% → Atenção\n• < 25% → Crítico');
+    }
+    function footerComoCalcular(){
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        document.getElementById('tab-dados').classList.add('active');
+        document.querySelector('.tab-btn').classList.add('active');
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function footerBenchmarks(){
+        alert('📈 Benchmarks NSS — Farmácias\n\n• Classe Mundial:  ≥ 90%\n• Excelente:       75% – 89%\n• Bom:             60% – 74%\n• Em evolução:     40% – 59%\n• Crítico:         < 40%\n\nTaxa de pesquisa ideal: ≥ 13% das interações totais.');
+    }
+    function footerMetodologia(){
+        alert('🔬 Metodologia NSS\n\nO NSS é calculado com base em uma escala de 1 a 5 estrelas:\n\n⭐⭐⭐⭐⭐  Nota 5 → Promotoras (clientes entusiastas)\n⭐⭐⭐⭐     Nota 4 → Neutras (clientes satisfeitos)\n⭐⭐⭐        Notas 3–1 → Detratoras (clientes insatisfeitos)\n\nNSS = (Promotoras − Detratoras) ÷ (P + N + D)\nTaxa de Pesquisa = (P + N + D) ÷ Total de Interações');
+    }
+
+    /* ── FOOTER — RECURSOS ────────────────────── */
+    async function footerExportarDados(){
+        if(!nssState.history.length){alert('Nenhum dado para exportar. Realize ao menos um cálculo.');return;}
+
+        // Garante que os gráficos estejam renderizados (ativa aba temporariamente)
+        const graficosPanel=document.getElementById('tab-graficos');
+        const wasHidden=graficosPanel.style.display==='none'||!graficosPanel.classList.contains('active');
+        if(wasHidden){
+            document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+            graficosPanel.classList.add('active');
+        }
+        nssUpdateCharts();
+        await new Promise(r=>setTimeout(r,450));
+        if(wasHidden){
+            document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+            document.getElementById('tab-dados').classList.add('active');
+        }
+
+        const {jsPDF}=window.jspdf;
+        const doc=new jsPDF('p','mm','a4');
+        const W=210,H=297,pad=16;
+        let y=0;
+
+        // ── HEADER ────────────────────────────────────
+        doc.setFillColor(5,46,22);
+        doc.rect(0,0,W,30,'F');
+        // Accent stripe
+        doc.setFillColor(76,175,80);
+        doc.rect(0,30,W,2,'F');
+
+        doc.setTextColor(255,255,255);
+        doc.setFontSize(20);
+        doc.setFont('helvetica','bold');
+        doc.text('Relatório NSS',pad,19);
+        doc.setFontSize(8);
+        doc.setFont('helvetica','normal');
+        doc.setTextColor(165,214,167);
+        doc.text('Calculadora NSS PRO - Farmacia',pad,25);
+        const now=new Date();
+        doc.setTextColor(200,230,200);
+        doc.text(`Gerado em ${now.toLocaleString('pt-BR')}`,W-pad,19,{align:'right'});
+        doc.text(`Período: última sessão`,W-pad,25,{align:'right'});
+        y=40;
+
+        // ── KPI CARDS ─────────────────────────────────
+        const last=nssState.history[0];
+        const total=parseInt(last.p)+parseInt(last.n)+parseInt(last.d);
+        const metaNSSPct=(nssState.metaNSS*100).toFixed(0);
+        const metaPesqPct=(nssState.metaPesquisa*100).toFixed(0);
+        const nssNum=parseFloat(last.nss);
+        const pesqNum=parseFloat(last.pesquisa);
+
+        // Título seção
+        doc.setTextColor(5,46,22);
+        doc.setFontSize(9);
+        doc.setFont('helvetica','bold');
+        doc.text('INDICADORES PRINCIPAIS',pad,y);
+        doc.setDrawColor(76,175,80);
+        doc.setLineWidth(0.4);
+        doc.line(pad,y+1.5,W-pad,y+1.5);
+        y+=7;
+
+        const kpis=[
+            {l:'NSS Atual',        v:last.nss+'%',    sub:`Meta: ${metaNSSPct}%`,   ok:nssNum>=nssState.metaNSS*100, c:[46,125,50],  lc:[232,245,233]},
+            {l:'Taxa de Pesquisa', v:last.pesquisa+'%',sub:`Meta: ${metaPesqPct}%`, ok:pesqNum>=nssState.metaPesquisa*100, c:[33,150,243], lc:[227,242,253]},
+            {l:'Total Avaliações', v:String(total),   sub:`P+N+D`,                  ok:true, c:[76,175,80],  lc:[248,250,248]},
+            {l:'Promotoras (Nota 5)',  v:String(last.p),  sub:'Nota 5',              ok:true, c:[46,125,50],  lc:[232,245,233]},
+            {l:'Neutras (Nota 4)',      v:String(last.n),  sub:'Nota 4',              ok:true, c:[117,117,117],lc:[245,245,245]},
+            {l:'Detratoras (Notas 3-1)',    v:String(last.d),  sub:'Notas 3-1',            ok:last.d===0, c:[198,40,40],  lc:[254,235,235]},
+        ];
+
+        const kW=(W-2*pad-10)/3, kH=20;
+        kpis.forEach((k,i)=>{
+            const col=i%3, row=Math.floor(i/3);
+            const kx=pad+col*(kW+5), ky=y+row*(kH+5);
+            // Card bg
+            doc.setFillColor(...k.lc);
+            doc.roundedRect(kx,ky,kW,kH,2.5,2.5,'F');
+            // Left accent bar
+            doc.setFillColor(...k.c);
+            doc.roundedRect(kx,ky,2,kH,1,1,'F');
+            // Badge
+            if(!k.ok && i<=1){
+                doc.setFillColor(254,242,242);
+                doc.roundedRect(kx+kW-14,ky+2,12,5,2,2,'F');
+                doc.setTextColor(198,40,40);
+                doc.setFontSize(5.5);
+                doc.setFont('helvetica','bold');
+                doc.text('ABAIXO',kx+kW-8,ky+5.5,{align:'center'});
+            } else if(i<=1){
+                doc.setFillColor(232,245,233);
+                doc.roundedRect(kx+kW-14,ky+2,12,5,2,2,'F');
+                doc.setTextColor(27,94,32);
+                doc.setFontSize(5.5);
+                doc.setFont('helvetica','bold');
+                doc.text('META',kx+kW-8,ky+5.5,{align:'center'});
+            }
+            doc.setTextColor(100,100,100);
+            doc.setFontSize(6.2);
+            doc.setFont('helvetica','normal');
+            doc.text(k.l.toUpperCase(),kx+4,ky+6);
+            doc.setTextColor(...k.c);
+            doc.setFontSize(15);
+            doc.setFont('helvetica','bold');
+            doc.text(k.v,kx+4,ky+15);
+            doc.setTextColor(140,140,140);
+            doc.setFontSize(6);
+            doc.setFont('helvetica','normal');
+            doc.text(k.sub,kx+4,ky+19);
+        });
+        y+=2*(kH+5)+8;
+
+        // ── GRÁFICOS ───────────────────────────────────
+        doc.setTextColor(5,46,22);
+        doc.setFontSize(9);
+        doc.setFont('helvetica','bold');
+        doc.text('GRÁFICOS',pad,y);
+        doc.setDrawColor(76,175,80);
+        doc.setLineWidth(0.4);
+        doc.line(pad,y+1.5,W-pad,y+1.5);
+        y+=7;
+
+        const cW=(W-2*pad-6)/2, cH=58;
+        let chart1Img=null,chart2Img=null;
+        if(nssCharts.m) try{chart1Img=nssCharts.m.toBase64Image();}catch(e){}
+        if(nssCharts.d) try{chart2Img=nssCharts.d.toBase64Image();}catch(e){}
+
+        // Chart bg cards
+        doc.setFillColor(250,251,250);
+        doc.roundedRect(pad,y,cW,cH+10,3,3,'F');
+        doc.setFillColor(250,251,250);
+        doc.roundedRect(pad+cW+6,y,cW,cH+10,3,3,'F');
+
+        if(chart1Img) doc.addImage(chart1Img,'PNG',pad+1,y+1,cW-2,cH);
+        doc.setTextColor(100,100,100);
+        doc.setFontSize(6.5);
+        doc.setFont('helvetica','bold');
+        doc.text('NSS por dia da semana (+5 promotoras/dia)',pad+cW/2,y+cH+7,{align:'center'});
+
+        if(chart2Img) doc.addImage(chart2Img,'PNG',pad+cW+7,y+1,cW-2,cH);
+        doc.text('Distribuicao: Promotoras / Neutras / Detratoras',pad+cW+6+cW/2,y+cH+7,{align:'center'});
+        y+=cH+16;
+
+        // ── ANÁLISE INTELIGENTE ────────────────────────
+        doc.setTextColor(5,46,22);
+        doc.setFontSize(9);
+        doc.setFont('helvetica','bold');
+        doc.text('ANÁLISE INTELIGENTE',pad,y);
+        doc.setDrawColor(76,175,80);
+        doc.setLineWidth(0.4);
+        doc.line(pad,y+1.5,W-pad,y+1.5);
+        y+=7;
+
+        // Status block
+        let stBg,stBorder,stColor,stLabel;
+        if(nssNum>=80){stBg=[232,245,233];stBorder=[46,125,50];stColor=[27,94,32];stLabel='Excelencia';}
+        else if(nssNum>=60){stBg=[232,245,233];stBorder=[46,125,50];stColor=[27,94,32];stLabel='Saudavel';}
+        else if(nssNum>=40){stBg=[255,243,224];stBorder=[230,81,0];stColor=[191,54,12];stLabel='Atencao';}
+        else{stBg=[254,235,235];stBorder=[198,40,40];stColor=[183,28,28];stLabel='Critico';}
+
+        doc.setFillColor(...stBg);
+        doc.roundedRect(pad,y,W-2*pad,14,3,3,'F');
+        doc.setDrawColor(...stBorder);
+        doc.setLineWidth(0.5);
+        doc.roundedRect(pad,y,W-2*pad,14,3,3,'S');
+        doc.setTextColor(...stColor);
+        doc.setFontSize(9);
+        doc.setFont('helvetica','bold');
+        doc.text(stLabel+' - NSS de '+last.nss+'%',pad+5,y+6);
+        doc.setFont('helvetica','normal');
+        doc.setFontSize(7.5);
+        const semAval=Math.max(0,nssState.totalInteracoes-total);
+        const detR=total>0?((parseInt(last.d)/total)*100).toFixed(1)+'%':'-';
+        doc.text(`Pesquisa: ${last.pesquisa}% | Detratores: ${detR} | Sem avaliação: ${semAval} interações`,pad+5,y+11);
+        y+=19;
+
+        // Recomendações & Simulação em 2 colunas
+        const recW=(W-2*pad-6)/2;
+
+        // Col 1 - Recomendações
+        const recs=[];
+        if(parseInt(last.p)<parseInt(last.n)+parseInt(last.d))
+            recs.push({t:'Aumentar Promotoras',b:`${last.p} promotoras vs ${parseInt(last.n)+parseInt(last.d)} não-promotoras. Crie momentos de encantamento no atendimento.`});
+        else
+            recs.push({t:'Manter o Que Funciona',b:`Proporção positiva de promotoras. Transforme estas práticas em processos oficiais.`});
+        if(parseInt(last.d)>parseInt(last.p)*.2)
+            recs.push({t:'Reduzir Detratoras',b:`${last.d} detratores identificados. Crie fluxo de recuperação: contato em até 24h.`});
+        if(pesqNum<10)
+            recs.push({t:'Aumentar Taxa de Pesquisa',b:`Taxa em ${last.pesquisa}%. Teste WhatsApp e SMS com convite direto da equipe.`});
+
+        doc.setFillColor(248,253,248);
+        const recBoxH=recs.length*16+10;
+        doc.roundedRect(pad,y,recW,recBoxH,3,3,'F');
+        doc.setTextColor(5,46,22);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica','bold');
+        doc.text('RECOMENDAÇÕES',pad+4,y+6);
+        let ry=y+12;
+        recs.forEach(r=>{
+            doc.setFillColor(255,255,255);
+            doc.roundedRect(pad+3,ry-3,recW-6,13,2,2,'F');
+            doc.setDrawColor(46,125,50);
+            doc.setLineWidth(0.5);
+            doc.line(pad+3,ry-3,pad+3,ry+10);
+            doc.setTextColor(46,125,50);
+            doc.setFontSize(6.8);
+            doc.setFont('helvetica','bold');
+            doc.text(r.t,pad+6,ry+2);
+            doc.setTextColor(75,85,99);
+            doc.setFont('helvetica','normal');
+            doc.setFontSize(6.2);
+            const bl=doc.splitTextToSize(r.b,recW-12);
+            doc.text(bl,pad+6,ry+6.5);
+            ry+=16;
+        });
+
+        // Col 2 - Simulação e Projeção
+        const sim5=(total+5)>0?((parseInt(last.p)+5-parseInt(last.d))/(total+5)*100).toFixed(2):0;
+        const sim10=(total+10)>0?((parseInt(last.p)+10-parseInt(last.d))/(total+10)*100).toFixed(2):0;
+        const sim20=(total+20)>0?((parseInt(last.p)+20-parseInt(last.d))/(total+20)*100).toFixed(2):0;
+        const sc=Math.min(100,Math.max(0,Math.round(nssNum*.7+Math.min(pesqNum,20)*1.5)));
+        let scl='Crítico',scc=[198,40,40];
+        if(sc>=80){scl='Excelente';scc=[46,125,50];}else if(sc>=60){scl='Bom';scc=[76,175,80];}else if(sc>=40){scl='Em evolução';scc=[249,168,37];}
+
+        const sx=pad+recW+6;
+        doc.setFillColor(227,242,253);
+        doc.roundedRect(sx,y,recW,recBoxH,3,3,'F');
+        doc.setTextColor(13,71,161);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica','bold');
+        doc.text('SIMULAÇÃO DE MELHORIA',sx+4,y+6);
+
+        [['+5 promotoras',sim5],['+10 promotoras',sim10],['+20 promotoras',sim20]].forEach(([lbl,val],si)=>{
+            const sy2=y+14+si*14;
+            doc.setFillColor(255,255,255);
+            doc.roundedRect(sx+3,sy2-2,recW-6,11,2,2,'F');
+            doc.setTextColor(100,100,100);
+            doc.setFontSize(6.5);
+            doc.setFont('helvetica','normal');
+            doc.text(lbl,sx+6,sy2+4);
+            doc.setTextColor(21,101,192);
+            doc.setFont('helvetica','bold');
+            doc.text(`${last.nss}% → ${val}%`,sx+recW-8,sy2+4,{align:'right'});
+        });
+
+        // Score
+        const scoreY=y+14+3*14;
+        doc.setFillColor(255,255,255);
+        doc.roundedRect(sx+3,scoreY-2,recW-6,11,2,2,'F');
+        doc.setTextColor(100,100,100);
+        doc.setFontSize(6.5);
+        doc.setFont('helvetica','normal');
+        doc.text('Score de Qualidade',sx+6,scoreY+4);
+        doc.setTextColor(...scc);
+        doc.setFont('helvetica','bold');
+        doc.text(sc+'/100 - '+scl,sx+recW-8,scoreY+4,{align:'right'});
+
+        y+=recBoxH+8;
+
+        // ── HISTÓRICO ─────────────────────────────────
+        if(y<H-60 && nssState.history.length>0){
+            doc.setTextColor(5,46,22);
+            doc.setFontSize(9);
+            doc.setFont('helvetica','bold');
+            doc.text('HISTÓRICO DE CÁLCULOS',pad,y);
+            doc.setDrawColor(76,175,80);
+            doc.setLineWidth(0.4);
+            doc.line(pad,y+1.5,W-pad,y+1.5);
+            y+=7;
+
+            const cols=[40,22,22,20,20,20];
+            const hdrs=['Data/Hora','NSS (%)','Pesquisa (%)','Promotoras','Neutras','Detratoras'];
+            doc.setFillColor(5,46,22);
+            doc.roundedRect(pad,y,W-2*pad,7.5,1.5,1.5,'F');
+            let tx=pad+2;
+            hdrs.forEach((h,i)=>{
+                doc.setTextColor(200,230,200);
+                doc.setFontSize(6);
+                doc.setFont('helvetica','bold');
+                doc.text(h,tx+cols[i]/2,y+5,{align:'center'});
+                tx+=cols[i];
+            });
+            y+=7.5;
+
+            const maxRows=Math.floor((H-y-20)/6.5);
+            nssState.history.slice(0,maxRows).forEach((r,ri)=>{
+                if(ri%2===0){doc.setFillColor(248,250,248);doc.rect(pad,y,W-2*pad,6,'F');}
+                let rx=pad+2;
+                [r.timestamp,r.nss+'%',r.pesquisa+'%',String(r.p),String(r.n),String(r.d)].forEach((v,i)=>{
+                    doc.setTextColor(i===1?27:75,i===1?94:85,i===1?32:99);
+                    doc.setFontSize(6);
+                    doc.setFont('helvetica',i===1?'bold':'normal');
+                    doc.text(v,rx+cols[i]/2,y+4,{align:'center'});
+                    rx+=cols[i];
+                });
+                y+=6;
+            });
+            if(nssState.history.length>maxRows){
+                doc.setTextColor(150,150,150);
+                doc.setFontSize(6);
+                doc.text(`+ ${nssState.history.length-maxRows} registros adicionais`,pad,y+5);
+            }
+        }
+
+        // ── FOOTER ────────────────────────────────────
+        const pc=doc.internal.getNumberOfPages();
+        for(let i=1;i<=pc;i++){
+            doc.setPage(i);
+            doc.setFillColor(5,46,22);
+            doc.rect(0,H-11,W,11,'F');
+            doc.setFillColor(76,175,80);
+            doc.rect(0,H-11,W,1.5,'F');
+            doc.setTextColor(165,214,167);
+            doc.setFontSize(6.5);
+            doc.setFont('helvetica','normal');
+            doc.text('Calculadora NSS PRO - Relatório gerado automaticamente',pad,H-4.5);
+            doc.setTextColor(200,230,200);
+            doc.text(`Página ${i} de ${pc}`,W-pad,H-4.5,{align:'right'});
+        }
+
+        doc.save(`relatorio_nss_${now.toISOString().slice(0,10)}.pdf`);
+    }
+    function footerHistorico(){
+        const btn=document.querySelectorAll('.tab-btn')[3];
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        document.getElementById('tab-historico').classList.add('active');
+        btn.classList.add('active');
+        renderHistory();
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function footerSimulacoes(){
+        const btn=document.querySelectorAll('.tab-btn')[2];
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        document.getElementById('tab-ia').classList.add('active');
+        btn.classList.add('active');
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function footerRelatorios(){
+        if(!nssState.history.length){alert('Nenhum dado disponível. Realize ao menos um cálculo.');return;}
+        const last=nssState.history[0];
+        alert(`📋 Relatório Resumido — NSS\n\nÚltimo cálculo: ${last.timestamp}\nNSS: ${last.nss}%\nTaxa de Pesquisa: ${last.pesquisa}%\nPromotoras: ${last.p} | Neutras: ${last.n} | Detratoras: ${last.d}\nTotal de registros no histórico: ${nssState.history.length}\n\nPara exportar todos os dados, use "Exportar dados".`);
+    }
+
+    /* ── FOOTER — IA ──────────────────────────── */
+    function footerRecomendacoes(){
+        const btn=document.querySelectorAll('.tab-btn')[2];
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        document.getElementById('tab-ia').classList.add('active');
+        btn.classList.add('active');
+        window.scrollTo({top:0,behavior:'smooth'});
+    }
+    function footerPredicao(){
+        footerRecomendacoes();
+    }
+    function footerScoreQualidade(){
+        footerRecomendacoes();
+    }
+
+    /* ── FOOTER — SUPORTE ─────────────────────── */
+    function footerDocumentacao(){
+        alert('📖 Documentação\n\nEsta calculadora utiliza a metodologia NSS adaptada para farmácias com escala de 1 a 5 estrelas.\n\nCampos disponíveis:\n• Total de Interações: atendimentos no período\n• Promotoras (nota 5): clientes entusiastas\n• Neutras (nota 4): clientes satisfeitos\n• Detratoras (notas 3–1): clientes insatisfeitos\n• Meta NSS: entre 0 e 1 (ex: 0.95 = 95%)\n• Meta Pesquisa: taxa mínima de participação desejada\n\nO cálculo é atualizado em tempo real a cada recálculo.');
+    }
+    function footerContato(){
+        alert('📩 Contato\n\nPara suporte ou dúvidas, entre em contato com o responsável pela ferramenta na sua organização.');
+    }
+    function footerPrivacidade(){
+        alert('🔒 Política de Privacidade\n\nEsta ferramenta processa os dados localmente no seu navegador.\n\nNenhum dado é enviado a servidores externos.\nTodos os históricos são temporários e existem apenas durante a sessão atual.\n\nAo fechar ou recarregar a página, todos os dados são apagados.');
+    }
+    function footerPortalTitular(){
+        alert('👤 Portal do Titular\n\nComo todos os dados são processados localmente e não há coleta ou armazenamento em servidor, não há dados pessoais retidos por esta ferramenta.\n\nPara solicitações LGPD relacionadas a outros sistemas, contate o DPO da sua organização.');
+    }
+</script>
+</body>
+</html>

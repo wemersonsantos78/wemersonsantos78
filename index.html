@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<!-- ============================================
+     HEARTWARMING - SISTEMA DE ATENDIMENTO MULTICANAL
+     ============================================
+     Arquivo principal da aplicação.
+     Estrutura:
+       1. Head (metadados, fontes, estilos, scripts)
+       2. Header (logo, navegação de portais, slogan)
+       3. Seção 1: Gerenciador de Notas
+       4. Seção 2: Scripts de Atendimento (cards rápidos)
+       5. Seção 3: Scripts e Tratamento (personagens + ferramentas)
+       6. Footer
+       7. Popups (scripts, ler mais)
+     ============================================ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartwarming - Sistema de Atendimento Multicanal</title>
+    <link rel="icon" href="./images/Logo-Photoroom.png" type="image/x-icon">
+
+    <!-- ---- FONTES EXTERNAS ---- -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ---- ESTILOS DA APLICAÇÃO ---- -->
+    <link rel="stylesheet" href="./assets/style.css">
+
+    <!-- ---- BIBLIOTECAS CSS EXTERNAS ---- -->
+    <!-- Leaflet (mapa) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <!-- Font Awesome 6.5 (ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- ---- SCRIPTS DE GERAÇÃO ---- -->
+    <!-- JsBarcode (código de barras) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <!-- ---- PDF E CANVAS ---- -->
+    <!-- jsPDF (geração de PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas (captura de HTML para imagem/PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- ---- XLSX (planilhas) ---- -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- ---- SCRIPTS DA APLICAÇÃO ---- -->
+    <script src="./assets/script.js" defer></script>
+    <script src="./assets/storedata.js" defer></script>
+    <script src="./assets/scriptcards.js" defer></script>
+</head>
+
+<body>
+
+    <!-- ============================================
+         1. HEADER E NAVEGAÇÃO
+         ============================================
+         - Fixo no topo com backdrop blur no scroll
+         - Logo + título à esquerda
+         - Pills de portais externos ao centro
+         - Slogan full-width abaixo
+         ============================================ -->
+    <header class="site-header" id="siteHeader">
+        <div class="header-main">
+            <!-- Logo e Título -->
+            <div class="header-brand">
+                <img class="header-logo" src="./images/Logo-Photoroom.png" alt="Logo Heartwarming">
+                <div class="header-titles">
+                    <h1 class="header-title">Heartwarming</h1>
+                    <span class="header-subtitle">Calor Humano</span>
+                </div>
+            </div>
+
+            <!-- Navegação de portais externos -->
+            <nav class="header-nav">
+                <a href="./pages/calculadora.html" target="_blank" class="nav-pill nav-pill--highlight" title="Calculadora de NSS">
+                    <i class="fas fa-calculator"></i> NSS
+                </a>
+                <a href="https://portal.tr.rd.com.br/login" target="_blank" class="nav-pill" title="Terminal de Relacionamento">TR</a>
+                <a href="https://id.pagar.me/signin" target="_blank" class="nav-pill" title="Portal Pagarme">Pagarme</a>
+                <a href="https://www.adyen.com/" target="_blank" class="nav-pill" title="Portal Adyen">Adyen</a>
+                <a href="https://raiap-auth.sce.manh.com/org_login" target="_blank" class="nav-pill" title="Portal Manhattan">Manhattan</a>
+                <a href="https://auth.uber.com/v2/" target="_blank" class="nav-pill" title="Portal Uber">Uber</a>
+                <a href="http://iws.rd.com.br/backommerce/#/pedidos/consulta" target="_blank" class="nav-pill" title="OMS">OMS</a>
+                <a href="https://grupordprod.service-now.com/now/cwf/agent/home" target="_blank" class="nav-pill" title="ServiceNow">ServiceNow</a>
+                <a href="https://privacyportal-br.onetrust.com/webform/ece1e280-13aa-4d10-984a-bda9a79f64d7/c973a872-1b90-4b71-8284-e75ce6928857" target="_blank" class="nav-pill" title="Política de Privacidade">Privacidade</a>
+            </nav>
+        </div>
+
+        <!-- Slogan institucional -->
+        <div class="header-slogan">
+            <span><i class="fas fa-headset"></i> Assistência Multicanal</span>
+        </div>
+    </header>
+
+
+    <!-- ============================================
+         2. SEÇÃO 1: GERENCIADOR DE NOTAS
+         ============================================
+         - CRUD de notas com localStorage
+         - Grid de cards com cores personalizadas
+         - Editor sidebar com pin, cores, salvar
+         - Busca em tempo real
+         ============================================ -->
+    <section class="section section--gray" id="notas">
+        <div class="app-wrapper">
+            <header class="app-header">
+                <div class="app-header-top">
+                    <div class="app-header-brand">
+                        <div class="app-icon"></div>
+                        <h2 class="app-title">Minhas Notas</h2>
+                    </div>
+                    <button type="button" class="btn btn--primary" onclick="createNote()">
+                        <i class="fas fa-plus"></i> Nova nota
+                    </button>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search search-box__icon"></i>
+                    <input type="text" class="search-box__input" id="searchField" placeholder="Buscar notas...">
+                </div>
+            </header>
+
+            <main class="app-main">
+                <!-- Grid de notas (fixadas + outras) -->
+                <section class="notes-workspace">
+                    <div class="notes-grid-wrapper">
+                        <div id="pinnedNotesContainer"></div>
+                        <div id="unpinnedNotesContainer"></div>
+                        <div id="emptyNotesContainer" class="empty-state" style="display: none;">
+                            <div class="empty-state__icon">📋</div>
+                            <div class="empty-state__text">Nenhuma nota criada. Clique em "Nova nota" para começar.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Editor lateral (abre ao selecionar nota) -->
+                <aside class="editor-sidebar is-hidden" id="editorSidebar">
+                    <div class="editor-header">
+                        <div class="editor-toolbar">
+                            <button type="button" class="editor-btn" onclick="togglePin()" title="Afixar" aria-label="Afixar nota">
+                                <i class="fas fa-thumbtack"></i>
+                            </button>
+                            <div class="editor-color-wrap">
+                                <button type="button" class="editor-btn" onclick="toggleColorMenu()" title="Mudar cor" aria-label="Mudar cor da nota">
+                                    <i class="fas fa-palette"></i>
+                                </button>
+                                <div class="color-palette-menu" id="colorMenu"></div>
+                            </div>
+                        </div>
+                        <div class="editor-actions">
+                            <button type="button" class="btn btn--save" onclick="saveCurrentNote()" title="Salvar nota">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                            <button type="button" class="editor-btn editor-btn--delete" onclick="deleteCurrentNote()" title="Deletar" aria-label="Deletar nota">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="editor-body">
+                        <input type="text" class="editor-title-input" id="editorTitle" placeholder="Título">
+                        <textarea class="editor-content-input" id="editorContent" placeholder="Comece a digitar..."></textarea>
+                        <div class="editor-footer" id="editorTimestamp"></div>
+                    </div>
+                </aside>
+            </main>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         3. SEÇÃO 2: SCRIPTS DE ATENDIMENTO (CARDS RÁPIDOS)
+         ============================================
+         - 5 cards circulares com imagens de fundo
+         - Abrem popup com estrofes de script editáveis
+         - Inicial, Verificando, Sem interação, Pré-final, Finalização
+         ============================================ -->
+    <section class="section section--white" id="scripts">
+        <div class="container">
+            <h2 class="section-title">Scripts de Atendimento</h2>
+            <div class="color-boxes">
+                <div class="color-box" data-key="inicio" style="background-image: url('./images/inicio.png');">
+                    <div class="color-box__label"><strong>Inicial</strong></div>
+                </div>
+                <div class="color-box" data-key="aguarde" style="background-image: url('./images/Aguarde.png');">
+                    <div class="color-box__label"><strong>Verificando</strong></div>
+                </div>
+                <div class="color-box" data-key="seminteracao" style="background-image: url('./images/sem\ interação.png');">
+                    <div class="color-box__label"><strong>Sem interação</strong></div>
+                </div>
+                <div class="color-box" data-key="prefinal" style="background-image: url('./images/Conhecendo.png');">
+                    <div class="color-box__label"><strong>Pré-final</strong></div>
+                </div>
+                <div class="color-box" data-key="fim" style="background-image: url('./images/Encerramento.png');">
+                    <div class="color-box__label"><strong>Finalização</strong></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================
+         4. POPUPS GLOBAIS
+         ============================================
+         4.1 Popup de Scripts (estrofes editáveis)
+         4.2 Popup "Ler Mais" (textos por categoria)
+         ============================================ -->
+
+    <!-- 4.1 Popup de Scripts -->
+    <div class="popup" id="popup">
+        <div class="popup-content popup-content--scripts">
+            <button type="button" class="popup-close" onclick="closePopup()" title="Fechar" aria-label="Fechar popup">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="notification" class="notification"></div>
+            <div class="popup-body" id="estrofesContainer"></div>
+            <button type="button" class="btn btn--accent" onclick="addEstrofe()">
+                <i class="fas fa-plus"></i> Nova Estrofe
+            </button>
+        </div>
+    </div>
+
+    <!-- 4.2 Popup "Ler Mais" -->
+    <div class="popup" id="readMorePopup" style="display: none;">
+        <div class="popup-content popup-content--readmore">
+            <button type="button" class="popup-close" onclick="closeReadMorePopup()" title="Fechar" aria-label="Fechar popup">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="popup-body popup-texto-vazio">
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================
+         5. SEÇÃO 3: SCRIPTS E TRATAMENTO 
+         ============================================
+         - Grid de 8 cards de personagem/categoria
+         - Painel de detalhes dinâmico (mostra ao clicar)
+         - Cada personagem tem ferramenta específica:
+           5.1 Cupons e Benefícios (Pesquisa SKU)
+           5.2 Lojas Parceiras (Busca de lojas)
+           5.3 Chamados (placeholder)
+           5.4 Entrega Turbo (Gerador de etiqueta manual)
+           5.5 Problemas de Entrega (Gerador de e-mail)
+           5.6 Financeiro (Gerador de XLSX)
+           5.7 Receita Médica (placeholder)
+           5.8 Notas Fiscais (Sistema de etiquetas QR/Barcode)
+         ============================================ -->
+    <section class="section section--green" id="characters">
+        <div class="container">
+            <h2 class="section-title">Scripts e Tratamento</h2>
+
+            <!-- Grid de cards de personagem -->
+            <div class="character-cards">
+                <div class="character-card" data-character="Cuponsebenefícios">
+                    <div class="character-image" style="background-image: url(./images/Cupons.png);"></div>
+                    <div class="character-name">Stix, PBM, Univers...</div>
+                    <div class="character-role">Pontos e benefícios</div>
+                </div>
+                <div class="character-card" data-character="Lojasparceiras">
+                    <div class="character-image" style="background-image: url(./images/iFood.png);"></div>
+                    <div class="character-name">iFood e Marketplace</div>
+                    <div class="character-role">Vendas de Parceiras</div>
+                </div>
+                <div class="character-card active" data-character="Manutencao">
+                    <div class="character-image" style="background-image: url(./images/manutenção.png);"></div>
+                    <div class="character-name">Chamados</div>
+                    <div class="character-role">Status e correção</div>
+                </div>
+                <div class="character-card" data-character="Entrega">
+                    <div class="character-image" style="background-image: url(./images/Motoboy.png);"></div>
+                    <div class="character-name">Entrega Turbo e D+1</div>
+                    <div class="character-role">Alocações e negativas</div>
+                </div>
+                <div class="character-card" data-character="Problemasentregas">
+                    <div class="character-image" style="background-image: url(./images/Entregas.png);"></div>
+                    <div class="character-name">Problemas de entrega</div>
+                    <div class="character-role">Pedido não recebido</div>
+                </div>
+                <div class="character-card" data-character="Financeiro">
+                    <div class="character-image" style="background-image: url(./images/Financeiro.png);"></div>
+                    <div class="character-name">Financeiro</div>
+                    <div class="character-role">Processos devolutivos</div>
+                </div>
+                <div class="character-card" data-character="Receitamedica">
+                    <div class="character-image" style="background-image: url(./images/receita.png);"></div>
+                    <div class="character-name">Receita Médica</div>
+                    <div class="character-role">Aprovação e verificação</div>
+                </div>
+                <div class="character-card" data-character="Notas">
+                    <div class="character-image" style="background-image: url(./images/nf.png);"></div>
+                    <div class="character-name">Notas colantes e fiscais</div>
+                    <div class="character-role">Criar e enviar</div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 5.1 DETALHES: CUPONS E BENEFÍCIOS
+                 - Pesquisa de SKU em Drogasil e Droga Raia
+                 ============================================ -->
+            <div class="character-details" id="details-Cuponsebenefícios">
+                <div class="details-left">
+                    <h3 class="details-title">Stix, PBM, Univers...</h3>
+                    <p class="details-description">
+                        Aproveite os melhores descontos com elegância. Benefícios garantidos ao seu alcance.
+                    </p>
+                    <a href="#" class="btn btn--primary read-more-btn" data-popup-id="Cuponsebenefícios">
+                        <i class="fas fa-book-open"></i> Ver mais
+                    </a>
+                </div>
+                <div class="details-right">
+                    <div class="details-panel">
+                        <div class="tool-header">
+                            <i class="fas fa-search"></i>
+                            <h4>Pesquisa de SKU</h4>
+                        </div>
+                        <div class="sku-search-grid">
+                            <form class="sku-form" action="https://www.drogasil.com.br/search" method="get" target="_blank" rel="noopener noreferrer">
+                                <label for="buscaDrogasil">Drogasil</label>
+                                <div class="sku-form__row">
+                                    <input type="text" name="w" id="buscaDrogasil" required placeholder="Digite o SKU">
+                                    <button type="submit" class="btn btn--primary">OK</button>
+                                    <img class="sku-logo" src="./images/logodrogasil.png" alt="Logo Drogasil">
+                                </div>
+                            </form>
+                            <form class="sku-form" action="https://www.drogaraia.com.br/search" method="get" target="_blank" rel="noopener noreferrer">
+                                <label for="buscaRaia">Droga Raia</label>
+                                <div class="sku-form__row">
+                                    <input type="text" name="w" id="buscaRaia" required placeholder="Digite o SKU">
+                                    <button type="submit" class="btn btn--primary">OK</button>
+                                    <img class="sku-logo" src="./images/logoraia.png" alt="Logo Raia">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 5.2 DETALHES: LOJAS PARCEIRAS
+                 - Busca de lojas por código JAVA ou nome
+                 ============================================ -->
+            <div class="character-details" id="details-Lojasparceiras">
+                <div class="details-left">
+                    <h3 class="details-title">iFood, Rappi e Marketplace</h3>
+                    <p class="details-description">
+                        Solução rápida para problemas de acesso e compra digital. Expertise em resolução técnica.
+                    </p>
+                    <a href="#" class="btn btn--primary read-more-btn" data-popup-id="Lojasparceiras">
+                        <i class="fas fa-book-open"></i> Ver mais
+                    </a>
+                </div>
+                <div class="details-right">
+                    <div class="details-panel store-search-panel">
+                        <div class="store-search-wrap">
+                            <div class="store-card-title">
+                                <span class="store-title-icon"></span>
+                                Busca de Lojas
+                            </div>
+                            <div class="store-divider"></div>
+                            <p class="store-subtitle">Digite o Código JAVA ou o nome da farmácia para buscar</p>
+                            <div class="store-search-row">
+                                <input class="store-search-input" id="storeSearchInput" type="text"
+                                    placeholder="Ex: 100, 1005, SP BROOKLIN, SAO PAULO..." autocomplete="off">
+                                <button type="button" class="store-btn-buscar" onclick="buscarLoja()">
+                                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                    Buscar
+                                </button>
+                            </div>
+                        </div>
+                        <div id="storeOut"><p class="store-hint">Digite um termo acima para buscar.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 5.3 DETALHES: CHAMADOS
+                 - Placeholder para gestão de chamados
+                 ============================================ -->
+            <div class="character-details" id="details-Manutencao">
+                <div class="details-left">
+                    <h3 class="details-title">Chamados</h3>
+                    <p class="details-description">
+                        Organização e facilidades para otimizar seu atendimento. Protocolos eficientes.
+                    </p>
+                    <a href="#" class="btn btn--primary read-more-btn" data-popup-id="Manutencao">
+                        <i class="fas fa-book-open"></i> Ver mais
+                    </a>
+                </div>
+                <div class="details-right">
+                    <div class="details-panel details-panel--placeholder">
+                        <i class="fas fa-tools placeholder-icon"></i>
+                        <p>Área para gestão de chamados e protocolos de atendimento.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 5.4 DETALHES: ENTREGA TURBO E D+1
+                 - Gerador de etiqueta manual de despacho
+                 - Formulário completo + preview + PDF
+                 ============================================ -->
+            <div class="character-details" id="details-Entrega">
+                <div class="details-left">
+                    <h3 class="details-title">Entregas turbo e expressa</h3>
+                    <p class="details-description">
+                        Velocidade e eficiência nas entregas expressas. Solução para problemas de entrega.
+                    </p>
+                    <a href="#" class="btn btn--primary read-more-btn" data-popup-id="Entrega">
+                        <i class="fas fa-book-open"></i> Ver mais
+                    </a>
+                </div>
+                <div class="details-right">
+                    <div class="details-panel">
+                        <div class="tool-header">
+                            <i class="fas fa-tag"></i>
+                            <h4>Gerador de Etiqueta Manual</h4>
+                        </div>
+                        <div id="etiquetaForm">
+                            <div class="form-grid form-grid--2">
+                                <div class="form-field">
+                                    <label for="unidadeNegocio">Unidade de Negócio:</label>
+                                    <input type="text" id="unidadeNegocio">
+                                </div>
+                                <div class="form-field">
+                                    <label for="codigoDestino">Código Destino:</label>
+                                    <input type="text" id="codigoDestino" placeholder="SP CAMPO GRANDE 1">
+                                </div>
+                                <div class="form-field">
+                                    <label for="numeroPedido">Número do Pedido:</label>
+                                    <input type="text" id="numeroPedido" placeholder="250830302802" required>
+                                </div>
+                                <div class="form-field">
+                                    <label for="cliente">Cliente:</label>
+                                    <input type="text" id="cliente" placeholder="THAIS RODRIGUES SANTOS LEITE" required>
+                                </div>
+                                <div class="form-field">
+                                    <label for="nf">NF:</label>
+                                    <input type="text" id="nf" placeholder="43660">
+                                </div>
+                                <div class="form-field">
+                                    <label for="tipoSolicitacao">Tipo Solicitação:</label>
+                                    <select id="tipoSolicitacao">
+                                        <option value="Envio">Envio</option>
+                                        <option value="Reenvio">Reenvio</option>
+                                        <option value="Troca">Troca</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label for="quantidade">Quantidade:</label>
+                                    <input type="number" id="quantidade" value="1" min="1">
+                                </div>
+                                <div class="form-field">
+                                    <label for="codigoRastreio">Código Rastreio:</label>
+                                    <input type="text" id="codigoRastreio" placeholder="250830302802">
+                                </div>
+                            </div>
+                            <div class="form-field form-field--full">
+                                <label for="endereco">Endereço Completo:</label>
+                                <textarea id="endereco" placeholder="Rua Doutor Artur Zapponi, 97 - Parque São Luís - São Paulo - SP - CEP: 02840170" required></textarea>
+                            </div>
+                            <div class="form-grid form-grid--2">
+                                <div class="form-field">
+                                    <label for="motorista">Nome do Motorista:</label>
+                                    <input type="text" id="motorista" placeholder="Nome do motorista">
+                                </div>
+                                <div class="form-field">
+                                    <label for="observacao">Observação:</label>
+                                    <input type="text" id="observacao" placeholder="Observações">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group btn-group--center">
+                            <button type="button" class="btn btn--primary" onclick="gerarEtiqueta()">
+                                <i class="fas fa-file-invoice"></i> Gerar Etiqueta
+                            </button>
+                            <button type="button" class="btn btn--secondary" onclick="gerarPDF()" id="btnGerarPDF">
+                                <i class="fas fa-file-pdf"></i> Gerar PDF
+                                <span class="loading" id="loading">
+                                    <span class="spinner"></span>
+                                </span>
+                            </button>
+                            <button type="button" class="btn btn--tertiary" onclick="limparFormulario()">
+                                <i class="fas fa-trash"></i> Limpar
+                            </button>
+                        </div>
+                        <div class="etiqueta-preview-wrapper" id="etiquetaContainer" style="display: none;">
+                            <div id="etiquetaPreview"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 5.5 DETALHES: PROBLEMAS DE ENTREGA
+                 - Gerador de e-mail de confirmação de entrega
+                 ============================================ -->
+            <div class="character-details" id="details-Problemasentregas">
+                <div class="details-left">
+                    <h3 class="details-title">Pedidos não entregue</h3>
+                    <p class="details-description">
+                        Especialista em entregas programadas. Confiabilidade no prazo certo.
+                    </p>
+                    <a href="#" class="btn btn--primary read-more-btn" data-popup-id="Problemasentregas">
+                        <i class="fas fa-book-open"></i> Ver mais
+                    </a>
+                </div>
+                <div class="details-right">
+                    <div class="details-panel">
+                         <header class="label-system-header">
+                                <div class="label-system-logo">&#128230;</div>
+                                <div class="label-header-text">
+                                    <h4 class="label-system-title">Sistema de Etiquetas</h4>
+                                    <p class="label-system-subtitle">Gerador profissional de etiquetas</p>
+                                </div>
+                                <div class="label-system-stats">
+                                    <div class="label-stat-number" id="labelTotalGenerated">0</div>
+                                    <div class="label-stat-label">Geradas</div>
+                                </div>
+                            </header>
+
+                            <!-- Layout principal: formulário + preview -->
+                            <div class="label-system-main">
+                                <!-- Painel de formulário -->
+                                <div class="label-form-panel">
+                                    <!-- Seção: Configurações -->
+                                    <div class="label-form-section">
+                                        <div class="label-section-title">&#9881; Configurações</div>
+                                        <div class="label-form-grid">
+                                            <div class="label-form-group">
+                                                <label class="label-form-label">Tipo de Código</label>
+                                                <select id="labelCodeType" class="label-form-select">
+                                                    <option value="barcode">&#128202; Código de Barras</option>
+                                                    <option value="qr" selected>&#128241; QR Code</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="label-controls-section">
+                                            <div class="label-controls-grid">
+                                                <div class="label-slider-group">
+                                                    <label class="label-form-label">Largura</label>
+                                                    <input type="range" id="labelBarWidth" class="label-slider" min="1" max="4" value="2">
+                                                    <div class="label-slider-value" id="labelWidthValue">2</div>
+                                                </div>
+                                                <div class="label-slider-group">
+                                                    <label class="label-form-label">Altura</label>
+                                                    <input type="range" id="labelBarHeight" class="label-slider" min="30" max="120" value="40">
+                                                    <div class="label-slider-value" id="labelHeightValue">40</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Seção: Dados do Pedido -->
+                                    <div class="label-form-section">
+                                        <div class="label-section-title">&#128203; Dados do Pedido</div>
+                                        <div class="label-form-grid">
+                                            <div class="label-form-group">
+                                                <label class="label-form-label">Número do Pedido</label>
+                                                <input type="text" id="labelOrderNumber" class="label-form-input" placeholder="Ex: 250829686908">
+                                            </div>
+                                            <div class="label-form-group">
+                                                <label class="label-form-label">Texto do Código</label>
+                                                <input type="text" id="labelCodeText" class="label-form-input" placeholder="Texto personalizado">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Seção: Destinatário -->
+                                    <div class="label-form-section">
+                                        <div class="label-section-title">&#128100; Destinatário</div>
+                                        <div class="label-form-grid">
+                                            <div class="label-form-group">
+                                                <label class="label-form-label">Nome Completo</label>
+                                                <input type="text" id="labelRecipientName" class="label-form-input" placeholder="Nome completo">
+                                            </div>
+                                            <div class="label-form-group">
+                                                <label class="label-form-label">Endereço Completo</label>
+                                                <textarea id="labelRecipientAddress" class="label-form-input" rows="2" placeholder="Endereço completo com CEP"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Seção: Remetente -->
+                                    <div class="label-form-section">
+                                        <div class="label-section-title">&#127970; Remetente</div>
+                                        <div class="label-form-group">
+                                            <label class="label-form-label">Informações do Remetente</label>
+                                            <input type="text" id="labelSenderInfo" class="label-form-input" placeholder="Código ou informações">
+                                        </div>
+                                    </div>
+
+                                    <!-- Botões de ação -->
+                                    <button type="button" id="labelGenerateBtn" class="label-btn label-btn-primary">&#128196; Gerar Etiqueta</button>
+                                    <button type="button" id="labelClearBtn" class="label-btn label-btn-secondary">&#128465; Limpar Tudo</button>
+                                    <button type="button" id="labelDownloadBtn" class="label-btn label-btn-danger">&#128190; Baixar PDF</button>
+                                    <div id="labelMessage"></div>
+                                </div>
+
+                                <!-- Painel de preview -->
+                                <div class="label-preview-panel">
+                                    <div id="labelPreview">
+                                        <div class="label-preview-empty">
+                                            <div class="label-preview-empty-icon">&#128230;</div>
+                                            <div>Sua etiqueta aparecerá aqui</div>
+                                            <div style="font-size: 11px; margin-top: 6px; opacity: 0.7;">Configure os dados e clique em "Gerar"</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 5.6 DETALHES: FINANCEIRO
+                 - Gerador de planilha XLSX de pedidos
+                 - Status: ENTREGUE, CANCELADO, OUTROS
+                 - Modo individual e em massa
+                 ============================================ -->
+            <div class="character-details" id="details-Financeiro">
+                <div class="details-left">
+                    <h3 class="details-title">Financeiro</h3>
+                    <p class="details-description">
+                        Especialista em processos devolutivos e questões financeiras. Soluções econômicas eficientes.
+                    </p>
+                    <a href="#" class="btn btn--primary read-more-btn" data-popup-id="Financeiro">
+                        <i class="fas fa-book-open"></i> Ver mais
+                    </a>
+                </div>
+                <div class="details-right">
+                    <div class="details-panel">
+                        <!-- Sistema XLSX -->
+                        <header class="gx-header">
+                            <div class="gx-logo">
+                                <div class="gx-logo-dot"></div>
+                                <h4 class="gx-logo-title">XLSX Pedidos <span>/ gerador</span></h4>
+                            </div>
+                            <div class="gx-pills">
+                                <button type="button" class="gx-pill" id="pill-ENTREGUE" data-status="ENTREGUE" onclick="setStatus(this)">ENTREGUE</button>
+                                <button type="button" class="gx-pill" id="pill-CANCELADO" data-status="CANCELADO" onclick="setStatus(this)">CANCELADO</button>
+                                <div class="gx-dropdown" id="extraDropdownWrap">
+                                    <button type="button" class="gx-pill gx-pill-extra" id="pill-extra" onclick="toggleDropdown()">
+                                        <span id="extraLabel">OUTROS STATUS</span>
+                                        <span class="gx-dd-arrow" id="ddArrow">&#9662;</span>
+                                    </button>
+                                    <div class="gx-dd-list" id="dropdownList">
+                                        <button type="button" class="gx-dd-item" data-status="AGUARDANDO COLETA" onclick="setExtraStatus(this)">AGUARDANDO COLETA</button>
+                                        <button type="button" class="gx-dd-item" data-status="EM PROCESSO DE ENTREGA" onclick="setExtraStatus(this)">EM PROCESSO DE ENTREGA</button>
+                                        <button type="button" class="gx-dd-item" data-status="ESTORNADO" onclick="setExtraStatus(this)">ESTORNADO</button>
+                                        <button type="button" class="gx-dd-item" data-status="ESTORNADO PARCIALMENTE" onclick="setExtraStatus(this)">ESTORNADO PARCIALMENTE</button>
+                                        <button type="button" class="gx-dd-item" data-status="ESTORNADO TOTALMENTE" onclick="setExtraStatus(this)">ESTORNADO TOTALMENTE</button>
+                                        <button type="button" class="gx-dd-item" data-status="FATURADO" onclick="setExtraStatus(this)">FATURADO</button>
+                                        <button type="button" class="gx-dd-item" data-status="PROBLEMA DE ENTREGA" onclick="setExtraStatus(this)">PROBLEMA DE ENTREGA</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        <div class="gx-panel">
+                            <div class="gx-tabs">
+                                <button type="button" class="gx-tab gx-tab--active" id="tab-individual" onclick="setMode('individual')">Individual</button>
+                                <button type="button" class="gx-tab" id="tab-massa" onclick="setMode('massa')">Em Massa</button>
+                            </div>
+
+                            <!-- Painel Individual -->
+                            <div class="gx-panel-individual" id="panel-individual">
+                                <div class="gx-section-label">Adicionar pedido</div>
+                                <div class="gx-input-card">
+                                    <div class="gx-field">
+                                        <label>cd_televenda *</label>
+                                        <input type="text" id="f_cd" placeholder="Ex: 01255" autocomplete="off">
+                                    </div>
+                                    <div class="gx-fields-grid" id="dtField">
+                                        <div class="gx-field" id="dtFieldInner">
+                                            <label>dt_entrega</label>
+                                            <input type="datetime-local" id="f_dt">
+                                        </div>
+                                        <div class="gx-field" id="msgFieldInner">
+                                            <label>mensageria</label>
+                                            <div class="gx-toggle-wrap">
+                                                <div class="gx-toggle" id="msgToggle" onclick="toggleMsg()"></div>
+                                                <span class="gx-toggle-label" onclick="toggleMsg()" id="msgLabel">Não (n)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="gx-btn-add" onclick="addPedido()">+ Adicionar pedido</button>
+                            </div>
+
+                            <!-- Painel Em Massa -->
+                            <div class="gx-panel-massa" id="panel-massa" style="display: none;">
+                                <div class="gx-section-label">Entrada em massa</div>
+                                <div class="gx-massa-hint">
+                                    <div class="gx-hint-title">Formatos aceitos</div>
+                                    <div class="gx-hint-modes">
+                                        <div class="gx-hint-mode">
+                                            <span class="gx-hint-mode-label">Modo A — só códigos</span>
+                                            <div class="gx-hint-example">01255<br>029888<br>0548773</div>
+                                        </div>
+                                        <div class="gx-hint-mode">
+                                            <span class="gx-hint-mode-label">Modo B — com ponto-e-vírgula</span>
+                                            <div class="gx-hint-example" id="hintB">cd_televenda;dt_entrega;mensageria<br>01255;01/02/2022 08:20;n<br>029888;15/03/2023 14:30;s</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="gx-defaults-row" id="defaultsRow">
+                                    <div class="gx-field" id="defaultDtWrap">
+                                        <label>dt_entrega padrão</label>
+                                        <input type="datetime-local" id="m_dt">
+                                    </div>
+                                    <div class="gx-field" id="defaultMsgWrap">
+                                        <label>mensageria padrão</label>
+                                        <div class="gx-toggle-wrap" style="margin-top:8px">
+                                            <div class="gx-toggle" id="mMsgToggle" onclick="toggleMassaMsg()"></div>
+                                            <span class="gx-toggle-label" onclick="toggleMassaMsg()" id="mMsgLabel">Não (n)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <textarea class="gx-massa-textarea" id="massaInput" placeholder="Cole os pedidos aqui... Separe por linha. Use ; para campos individuais ou só o código para aplicar valores padrão."></textarea>
+                                <button type="button" class="gx-btn-massa" onclick="addMassa()">+ ADICIONAR TODOS</button>
+                            </div>
+
+                            <div class="gx-section-label" style="margin-top:8px">
+                                Pedidos adicionados (<span id="countLabel">0</span>)
+                            </div>
+                            <div id="pedidosList"></div>
+
+                            <div class="gx-gen-bar">
+                                <button type="button" class="gx-btn-gen" id="genBtn" onclick="gerarXLSX()" disabled>&#8595; GERAR XLSX</button>
+                                <button type="button" class="gx-btn-clear" onclick="limparTudo()">Limpar</button>
+                            </div>
+                        </div>
+                        <div class="gx-toast" id="toast"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 5.7 DETALHES: RECEITA MÉDICA
+                 - Placeholder para gestão de receitas
+                 ============================================ -->
+            <div class="character-details" id="details-Receitamedica">
+                <div class="details-left">
+                    <h3 class="details-title">Receitas em aprovação</h3>
+                    <p class="details-description">
+                        Especialista em direcionamento de chat. Conecta você ao atendimento certo.
+                    </p>
+                    <a href="#" class="btn btn--primary read-more-btn" data-popup-id="Receitamedica">
+                        <i class="fas fa-book-open"></i> Ver mais
+                    </a>
+                </div>
+                <div class="details-right">
+                    <div class="details-panel details-panel--placeholder">
+                        <i class="fas fa-file-prescription placeholder-icon"></i>
+                        <p>Gerenciamento de receitas médicas e processo de aprovação.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 5.8 DETALHES: NOTAS FISCAIS / ETIQUETAS
+                 - Sistema profissional de geração de etiquetas
+                 - Suporte a QR Code e Código de Barras
+                 - Preview em tempo real + download PDF
+                 - ESTILIZAÇÃO PREMIUM da etiqueta gerada
+                 ============================================ -->
+            <div class="character-details" id="details-Notas">
+                <div class="details-left">
+                    <h3 class="details-title">Nota Fiscal, ticket de despacho e colante</h3>
+                    <p class="details-description">
+                        Especialista em notas de devolução. Facilita processos documentais.
+                    </p>
+                    <a href="#" class="btn btn--primary read-more-btn" data-popup-id="Notas">
+                        <i class="fas fa-book-open"></i> Ver mais
+                    </a>
+                </div>
+                <div class="details-right">
+                    <div class="details-panel"></div>
+                </div>
+            </div>
+            <!-- FIM dos detalhes de personagens -->
+    </section>
+
+
+    <!-- ============================================
+         6. FOOTER
+         ============================================ -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p><strong>Heartwarming</strong> - Calor Humano</p>
+            <p class="footer-copy"> Sistema de Atendimento Multicanal. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
