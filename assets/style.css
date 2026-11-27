@@ -2897,317 +2897,508 @@ select {
 
 
 /* ============================================
-   BUSCA DE LOJAS — PAINEL COMPLETO
+   BUSCA DE LOJAS — PAINEL iFood/Marketplace
+   Escopo: .ifood-panel  /  .ifood-modal-*
    ============================================ */
-.store-search-panel { padding: 0 !important; overflow: hidden; }
-.store-search-wrap { padding: 1.25rem 1.5rem 1rem; }
-.store-card-title { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; color: #1a4a2e; margin-bottom: 12px; }
-.store-title-icon { width: 28px; height: 20px; background: #1a6e3c; border-radius: 4px; position: relative; flex-shrink: 0; }
-.store-title-icon::before, .store-title-icon::after { content: ""; position: absolute; left: 5px; right: 5px; height: 3px; background: #fff; border-radius: 2px; }
-.store-title-icon::before { top: 4px; }
-.store-title-icon::after { bottom: 4px; }
-.store-divider { height: 2px; background: linear-gradient(90deg, #2d8f5e 0%, #d4eddc 100%); margin-bottom: 10px; border-radius: 2px; }
-.store-subtitle { font-size: 13px; color: #555; margin-bottom: 10px; }
-.store-search-row { display: flex; gap: 8px; }
-.store-search-input { flex: 1; height: 42px; padding: 0 14px; border: 1.5px solid #c8dcd0; border-radius: 10px; font-size: 13px; background: #fafdfa; color: #1a1a1a; outline: none; transition: border-color .2s, box-shadow .2s; }
-.store-search-input:focus { border-color: #2d8f5e; box-shadow: 0 0 0 3px rgba(45,143,94,.12); }
-.store-search-input::placeholder { color: #aaa; }
-.store-btn-buscar { height: 42px; padding: 0 18px; background: #1a6e3c; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: background .15s; }
-.store-btn-buscar:hover { background: #155730; }
-.store-btn-buscar svg { width: 15px; height: 15px; stroke: #fff; fill: none; stroke-width: 2.5; }
-.store-result-info { font-size: 13px; color: #666; margin: 0 1.5rem 12px; }
-.store-result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; padding: 0 1.5rem 1.5rem; }
-.store-empty-msg, .store-hint { text-align: center; padding: 2rem 1rem; color: #888; font-size: 13px; }
-#storeOut { max-height: 520px; overflow-y: auto; }
-/* ================================================================
-   LOJA RESUMO CARD — estilo "Resumo das Farmácias" da planilha
-   ================================================================ */
 
-.store-result-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 0 1.5rem 1.5rem;
+/* --green-200 (declarado aqui pois faltava no :root) */
+:root {
+    --green-200: #A7F3D0;
 }
 
-.loja-resumo-card {
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid #c8dcd0;
-  overflow: hidden;
-  font-size: 12.5px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+/* ── Painel wrapper ── */
+.ifood-panel {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    box-shadow: var(--shadow-md);
+    min-height: 420px;
 }
 
-/* ── Cabeçalho verde ── */
-.loja-resumo-header {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  background: #1a6e3c;
-  color: #fff;
-  padding: 0;
-  gap: 0;
+/* ── Header verde ── */
+.ifood-header {
+    background: var(--green-700);
+    color: var(--white);
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-shrink: 0;
 }
 
-.loja-resumo-logo {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 14px;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: .3px;
-  border-right: 1px solid rgba(255,255,255,0.2);
+.ifood-header svg {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
 }
 
-.loja-resumo-title {
-  text-align: center;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: .3px;
-  padding: 10px;
+.ifood-header h2 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--white);
+    letter-spacing: -0.2px;
+    margin: 0;
 }
 
-.loja-resumo-data-inau {
-  text-align: center;
-  padding: 0 14px;
-  border-left: 2px solid #ffd700;
-  min-width: 110px;
+/* ── Barra de busca ── */
+.ifood-search-section {
+    background: var(--white);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
 }
 
-.loja-resumo-data-label {
-  font-size: 10px;
-  font-weight: 600;
-  opacity: .85;
-  line-height: 1.2;
+.ifood-search-box {
+    position: relative;
+    width: 100%;
 }
 
-.loja-resumo-data-value {
-  font-size: 14px;
-  font-weight: 700;
+.ifood-search-box input {
+    width: 100%;
+    padding: 11px var(--space-5) 11px 42px;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    border: 1.5px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    outline: none;
+    transition: var(--transition-base);
+    background: var(--gray-50);
+    color: var(--gray-900);
+    box-sizing: border-box;
 }
 
-/* ── Células base ── */
-.loja-resumo-cell {
-  padding: 5px 8px;
-  border: 1px solid #d0e6d6;
-  line-height: 1.35;
+.ifood-search-box input:focus {
+    border-color: var(--green-700);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.12);
 }
 
-.loja-resumo-cell--label {
-  background: #1a6e3c;
-  color: #fff;
-  font-weight: 600;
-  font-size: 11.5px;
-  text-align: center;
+.ifood-search-box input::placeholder {
+    color: var(--gray-400);
 }
 
-.loja-resumo-cell--value {
-  background: #fff;
-  color: #111;
-  font-size: 12px;
+.ifood-search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
 }
 
-.loja-resumo-cell--green {
-  background: #1a6e3c;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
+.ifood-clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--gray-200);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--gray-600);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: var(--transition-fast);
 }
 
-.loja-resumo-cell--dark {
-  background: #145530;
-  color: #fff;
-  font-weight: 700;
-  font-size: 11.5px;
+.ifood-clear-btn:hover {
+    background: var(--gray-300);
+    color: var(--gray-900);
 }
 
-.loja-resumo-cell--arrow {
-  background: #fff;
-  color: #1a6e3c;
-  font-weight: 900;
-  font-size: 15px;
-  text-align: center;
-  padding: 5px 4px;
-  border: 1px solid #d0e6d6;
+.ifood-clear-btn.visible {
+    display: flex;
 }
 
-/* ── Linha 1: Java | Java# | Nome | Loja | DDD | Telefone ── */
-.loja-resumo-linha1 {
-  display: grid;
-  grid-template-columns: 55px 70px 55px 1fr 55px 110px;
-}
-
-/* ── Linha 2: Login | Senha | Email | Bandeira | DDD# | Tel# ── */
-.loja-resumo-linha2 {
-  display: grid;
-  grid-template-columns: 110px 90px 1fr 90px 55px 110px;
-}
-
-/* ── Linha 3: login# | senha# | email# | bandeira-badge | 2°Tel | tel# ── */
-.loja-resumo-linha3 {
-  display: grid;
-  grid-template-columns: 110px 90px 1fr 90px 80px 110px;
-}
-
-/* ── Linha 4/5: Regional/Gerente row ── */
-.loja-resumo-linha4 {
-  display: grid;
-  grid-template-columns: 100px 30px 1fr 1fr 120px 1fr;
-}
-
-/* ── Linha endereço headers ── */
-.loja-resumo-linha-end-header {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr 1.2fr 70px 100px;
-}
-
-/* ── Linha endereço valores ── */
-.loja-resumo-linha-end-val {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr 1.2fr 70px 100px;
-}
-
-/* ── Valores especiais ── */
-.loja-resumo-java {
-  font-weight: 800;
-  font-size: 14px;
-  color: #111;
-}
-
-.loja-resumo-nome {
-  font-weight: 700;
-  font-size: 13px;
-  color: #1a3a2a;
-}
-
-.loja-resumo-senha {
-  font-family: monospace;
-  font-weight: 700;
-  font-size: 12px;
-  color: #1a3a2a;
-  letter-spacing: .5px;
-}
-
-.loja-resumo-email-small {
-  font-size: 11px;
-  color: #0a5080;
-  word-break: break-all;
-}
-
-.loja-resumo-ddd {
-  font-weight: 700;
-  text-align: center;
-}
-
-.loja-resumo-tel {
-  font-weight: 600;
-}
-
-.loja-resumo-regional,
-.loja-resumo-gerente {
-  font-weight: 600;
-  color: #111;
-  font-size: 11.5px;
-}
-
-/* ── Bandeira badge ── */
-.loja-resumo-bandeira-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: .3px;
-  padding: 4px 8px;
-  border: 1px solid #d0e6d6;
-}
-
-.badge--raia  { 
-  background-image:url(../images/logoraia.png);
-  background-repeat: no-repeat; 
-  background-size: 100%; 
-  background-position: center;
-}
-.badge--dsil  { 
-    background-image:url(../images/logodrogasil.png); 
-    background-repeat: no-repeat; 
-    background-size: 100%;  
-    background-position: center; 
-}
-.badge--other { 
-    background: #f0f0f0; 
-    color: #555; 
-}
-
-/* ── Horários ── */
-.loja-resumo-horarios {
-  display: flex;
-  gap: 0;
-  border-top: 1px solid #d0e6d6;
-  background: #f6fcf8;
-}
-
-.loja-resumo-hor-block {
-  flex: 1;
-  text-align: center;
-  padding: 7px 6px;
-  border-right: 1px solid #d0e6d6;
-}
-
-.loja-resumo-hor-block:last-child { border-right: none; }
-
-.loja-resumo-hor-label {
-  font-size: 10px;
-  color: #1a6e3c;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .3px;
-  margin-bottom: 2px;
-}
-
-.loja-resumo-hor-val {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-/* ── Chips ── */
-.loja-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 8px 10px;
-  border-top: 1px solid #d0e6d6;
-  background: #f6fcf8;
-}
-
-.loja-chip {
-  font-size: 10.5px;
-  padding: 2px 9px;
-  border-radius: 20px;
-  background: #e0f5e9;
-  color: #0f6e56;
-  font-weight: 600;
-  border: 1px solid #b8e0c9;
-}
-
-/* ── Responsivo ── */
-@media (max-width: 700px) {
-  .loja-resumo-header {
-    grid-template-columns: 1fr;
+.ifood-results-count {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--gray-500);
     text-align: center;
-  }
-  .loja-resumo-logo { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.2); justify-content: center; }
-  .loja-resumo-data-inau { border-left: none; border-top: 1px solid rgba(255,255,255,0.2); padding: 8px; }
-  
-  .loja-resumo-linha1,
-  .loja-resumo-linha2,
-  .loja-resumo-linha3,
-  .loja-resumo-linha4,
-  .loja-resumo-linha-end-header,
-  .loja-resumo-linha-end-val {
-    grid-template-columns: 1fr 1fr;
-  }
+    letter-spacing: 0.01em;
+}
+
+/* ── Lista de farmácias ── */
+.ifood-lista-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-3) var(--space-4);
+    max-height: 380px;
+}
+
+.ifood-farmacia-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-2);
+    cursor: pointer;
+    transition: var(--transition-base);
+    border: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.ifood-farmacia-card:hover {
+    box-shadow: var(--shadow-green);
+    border-color: var(--green-700);
+    transform: translateY(-1px);
+}
+
+.ifood-farmacia-info h3 {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-900);
+    margin: 0 0 3px 0;
+}
+
+.ifood-farmacia-info p {
+    font-size: var(--font-size-xs);
+    color: var(--gray-500);
+    margin: 0;
+}
+
+.ifood-farmacia-tag {
+    background: var(--green-100);
+    color: var(--green-800);
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    padding: 3px 10px;
+    border-radius: 50px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ── Estados loading / empty ── */
+.ifood-loading,
+.ifood-empty {
+    text-align: center;
+    padding: var(--space-12) var(--space-5);
+    color: var(--gray-500);
+    font-size: var(--font-size-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.ifood-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--gray-200);
+    border-top-color: var(--green-700);
+    border-radius: 50%;
+    animation: ifood-spin 0.8s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes ifood-spin {
+    to { transform: rotate(360deg); }
+}
+
+.ifood-more-hint {
+    text-align: center;
+    padding: var(--space-4);
+    color: var(--gray-500);
+    font-size: var(--font-size-xs);
+    border-top: 1px solid var(--gray-100);
+    margin-top: var(--space-2);
+}
+
+/* ── Modal overlay (fixed no body) ── */
+.ifood-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.48);
+    z-index: 9000;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--space-5);
+    overflow-y: auto;
+    backdrop-filter: blur(2px);
+}
+
+.ifood-modal-overlay.active {
+    display: flex;
+}
+
+.ifood-modal-content {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    max-width: 580px;
+    width: 100%;
+    margin: var(--space-5) auto;
+    overflow: hidden;
+    animation: ifood-slide-up 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-xl);
+}
+
+@keyframes ifood-slide-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Conteúdo do modal ── */
+.ifood-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-5) var(--space-6) var(--space-4);
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.ifood-modal-header h2 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.ifood-close-btn {
+    background: var(--gray-100);
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--gray-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.ifood-close-btn:hover {
+    background: var(--gray-200);
+    color: var(--gray-900);
+}
+
+.ifood-info-section {
+    padding: var(--space-4) var(--space-6);
+}
+
+.ifood-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--gray-50);
+    gap: var(--space-4);
+}
+
+.ifood-info-row:last-child {
+    border-bottom: none;
+}
+
+.ifood-info-label {
+    font-size: var(--font-size-xs);
+    color: var(--gray-500);
+    font-weight: var(--font-weight-medium);
+    flex-shrink: 0;
+    min-width: 130px;
+}
+
+.ifood-info-value {
+    font-size: var(--font-size-sm);
+    color: var(--gray-900);
+    font-weight: var(--font-weight-medium);
+    text-align: right;
+    word-break: break-word;
+}
+
+.ifood-info-value--highlight {
+    color: var(--green-700);
+    font-weight: var(--font-weight-bold);
+}
+
+.ifood-divider {
+    height: 1px;
+    background: var(--gray-100);
+    margin: 0 var(--space-6);
+}
+
+.ifood-acessos-box {
+    margin: var(--space-4) var(--space-6);
+    background: var(--green-50);
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-5);
+}
+
+.ifood-acessos-title {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--green-800);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-3);
+}
+
+.ifood-acessos-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    gap: var(--space-3);
+}
+
+.ifood-acessos-label {
+    font-size: var(--font-size-xs);
+    color: var(--gray-600);
+}
+
+.ifood-acessos-value {
+    font-size: var(--font-size-sm);
+    color: var(--gray-900);
+    font-weight: var(--font-weight-semibold);
+    text-align: right;
+    word-break: break-word;
+}
+
+.ifood-horario-section {
+    padding: 0 var(--space-6) var(--space-4);
+}
+
+.ifood-horario-title {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-3);
+}
+
+.ifood-horario-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    text-align: center;
+}
+
+.ifood-horario-col .ifood-dia {
+    font-size: var(--font-size-xs);
+    color: var(--gray-400);
+    margin-bottom: 3px;
+}
+
+.ifood-horario-col .ifood-tempo {
+    font-size: var(--font-size-sm);
+    color: var(--gray-900);
+    font-weight: var(--font-weight-semibold);
+}
+
+.ifood-tags-section {
+    padding: 0 var(--space-6) var(--space-5);
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.ifood-tag-item {
+    background: var(--green-100);
+    color: var(--green-800);
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    padding: 4px var(--space-3);
+    border-radius: 50px;
+    border: 1px solid var(--green-200);
+}
+
+.ifood-tag-item--blue {
+    background: var(--blue-50);
+    color: #1565c0;
+    border-color: #bbdefb;
+}
+
+.ifood-tag-item--orange {
+    background: #fff3e0;
+    color: #e65100;
+    border-color: #ffe0b2;
+}
+
+.ifood-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--green-700);
+    color: var(--white);
+}
+
+.ifood-modal-footer span {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .ifood-lista-container {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ifood-modal-overlay {
+        padding: 0;
+    }
+    .ifood-modal-content {
+        border-radius: 0;
+        margin: 0;
+        min-height: 100vh;
+    }
+    .ifood-modal-header,
+    .ifood-info-section {
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+    .ifood-acessos-box,
+    .ifood-horario-section,
+    .ifood-tags-section {
+        margin-left: var(--space-4);
+        margin-right: var(--space-4);
+    }
+    .ifood-divider {
+        margin: 0 var(--space-4);
+    }
+}
+
+.ifood-farmacia-card {
+    width: 100%;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+}
+
+.ifood-farmacia-info {
+    display: block;
+    min-width: 0;
+}
+
+.ifood-farmacia-name {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-900);
+    margin-bottom: 3px;
+}
+
+.ifood-farmacia-location {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--gray-500);
 }

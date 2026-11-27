@@ -52,8 +52,9 @@
 
     <!-- ---- SCRIPTS DA APLICAÇÃO ---- -->
     <script src="./assets/script.js" defer></script>
-    <script src="./assets/storedata.js" defer></script>
+    <script src="./assets/farmacias.js" defer></script>
     <script src="./assets/scriptcards.js" defer></script>
+    <script src="./assets/store-search.js" defer></script>
 </head>
 
 <body>
@@ -358,24 +359,33 @@
                     </a>
                 </div>
                 <div class="details-right">
-                    <div class="details-panel store-search-panel">
-                        <div class="store-search-wrap">
-                            <div class="store-card-title">
-                                <span class="store-title-icon"></span>
-                                Busca de Lojas
+                    <div class="ifood-panel">
+                        <div class="ifood-header">
+                            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M16 2L4 9v14l12 7 12-7V9L16 2z" stroke="white" stroke-width="2" fill="none"/>
+                                <path d="M16 8L10 12v8l6 3 6-3v-8l-6-4z" fill="white"/>
+                            </svg>
+                            <h2>RD Saúde — Resumo das Farmácias</h2>
+                        </div>
+                        <div class="ifood-search-section">
+                            <div class="ifood-search-box">
+                                <span class="ifood-search-icon" aria-hidden="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                </span>
+                                <input type="text" id="searchInput" placeholder="Buscar por nome, cidade, Java, bandeira..." autocomplete="off" aria-label="Buscar farmácias">
+                                <button type="button" class="ifood-clear-btn" id="clearBtn" aria-label="Limpar busca">&times;</button>
                             </div>
-                            <div class="store-divider"></div>
-                            <p class="store-subtitle">Digite o Código JAVA ou o nome da farmácia para buscar</p>
-                            <div class="store-search-row">
-                                <input class="store-search-input" id="storeSearchInput" type="text"
-                                    placeholder="Ex: 100, 1005, SP BROOKLIN, SAO PAULO..." autocomplete="off">
-                                <button type="button" class="store-btn-buscar" onclick="buscarLoja()">
-                                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                                    Buscar
-                                </button>
+                            <div class="ifood-results-count" id="resultsCount" aria-live="polite">Carregando farmácias...</div>
+                        </div>
+                        <div class="ifood-lista-container" id="listaContainer" aria-live="polite">
+                            <div class="ifood-loading" id="loading">
+                                <div class="ifood-spinner" aria-hidden="true"></div>
+                                <span>Carregando farmácias...</span>
                             </div>
                         </div>
-                        <div id="storeOut"><p class="store-hint">Digite um termo acima para buscar.</p></div>
                     </div>
                 </div>
             </div>
@@ -800,6 +810,10 @@
             <p class="footer-copy"> Sistema de Atendimento Multicanal. Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <div class="ifood-modal-overlay" id="modalOverlay" aria-hidden="true">
+        <div class="ifood-modal-content" id="modalContent" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></div>
+    </div>
 
 </body>
 </html>
