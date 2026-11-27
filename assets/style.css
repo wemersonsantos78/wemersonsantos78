@@ -35,36 +35,39 @@
 :root {
     /* ---- CORES — PALETA VERDE ---- */
     --green-950: #052e16;
-    --green-900: #0B3D2E;
-    --green-800: #145A3A;
-    --green-700: #1A6B48;
-    --green-600: #2D8A5E;
-    --green-500: #3FA76E;
-    --green-100: #D1FADF;
-    --green-50: #F0FDF4;
+    --green-900: #052e16;
+    --green-800: #1b5e20;
+    --green-700: #2e7d32;
+    --green-600: #4caf50;
+    --green-500: #4caf50;
+    --green-400: #a5d6a7;
+    --green-200: #c8e6c9;
+    --green-100: #e8f5e9;
+    --green-50: #e8f5e9;
 
     /* ---- CORES — NEUTRAS ---- */
     --white: #FFFFFF;
-    --gray-950: #0A0F0C;
-    --gray-900: #1A1F1C;
-    --gray-800: #2D3330;
-    --gray-700: #374151;
-    --gray-600: #4B5563;
-    --gray-500: #6B7280;
-    --gray-400: #9CA3AF;
-    --gray-300: #D1D5DB;
-    --gray-200: #E5E7EB;
-    --gray-100: #F3F4F6;
-    --gray-50: #F9FAFB;
+    --gray-950: #111827;
+    --gray-900: #111827;
+    --gray-800: #1f2937;
+    --gray-700: #4b5563;
+    --gray-600: #4b5563;
+    --gray-500: #9ca3af;
+    --gray-400: #9ca3af;
+    --gray-300: #d1d5db;
+    --gray-200: #e2e4e0;
+    --gray-100: #f3f4f6;
+    --gray-50: #f4f5f3;
+    --surface-input: #fafafa;
 
     /* ---- CORES — SEMÂNTICAS ---- */
     --red-600: #DC2626;
-    --red-500: #EF4444;
+    --red-500: #ef5350;
     --red-50: #FEF2F2;
-    --blue-600: #2563EB;
-    --blue-500: #3B82F6;
-    --blue-50: #EFF6FF;
-    --amber-500: #F59E0B;
+    --blue-600: #1565c0;
+    --blue-500: #2196f3;
+    --blue-50: #e3f2fd;
+    --amber-500: #d97706;
 
     /* ---- TIPOGRAFIA ---- */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -107,7 +110,7 @@
     --shadow-md: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
     --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
     --shadow-xl: 0 12px 40px rgba(0,0,0,0.15);
-    --shadow-green: 0 4px 12px rgba(26, 107, 72, 0.25);
+    --shadow-green: 0 4px 18px rgba(46, 125, 50, 0.22);
 
     /* ---- TRANSIÇÕES ---- */
     --transition-fast: all 0.15s ease;
@@ -130,7 +133,7 @@ body {
     font-size: var(--font-size-base);
     line-height: var(--line-height-normal);
     color: var(--gray-900);
-    background-color: var(--white);
+    background-color: var(--gray-50);
     min-height: 100vh;
     overflow-x: hidden;
 }
@@ -274,9 +277,9 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .nav-pill--highlight {
-    background-color: var(--green-700);
+    background-color: var(--green-950);
     color: var(--white);
-    border-color: var(--green-700);
+    border-color: var(--green-950);
 }
 
 .nav-pill--highlight:hover {
@@ -321,11 +324,11 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .btn--primary {
-    background-color: var(--green-700);
+    background-color: var(--green-950);
     color: var(--white);
 }
 .btn--primary:hover {
-    background-color: var(--green-600);
+    background-color: var(--green-800);
     transform: translateY(-1px);
     box-shadow: var(--shadow-green);
 }
@@ -363,22 +366,22 @@ button { font-family: inherit; cursor: pointer; }
     cursor: pointer;
     transition: var(--transition-base);
     white-space: nowrap;
-    background-color: #e68a00;
+    background-color: var(--green-950);
     color: var(--white);
 }
 .btn--accent:hover {
-    background-color: #e68a00;
+    background-color: var(--green-800);
     transform: translateY(-1px);
 }
 
 .btn--save {
-    background-color: var(--green-600);
+    background-color: var(--green-950);
     color: var(--white);
     padding: 8px 16px;
     font-size: var(--font-size-sm);
 }
 .btn--save:hover {
-    background-color: var(--green-700);
+    background-color: var(--green-800);
     transform: translateY(-1px);
 }
 
@@ -419,7 +422,7 @@ textarea {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
     color: var(--gray-900);
-    background-color: var(--white);
+    background-color: var(--surface-input);
     transition: var(--transition-base);
     outline: none;
 }
@@ -431,7 +434,8 @@ input:focus,
 select:focus,
 textarea:focus {
     border-color: var(--green-700);
-    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.12);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+    background-color: var(--white);
 }
 
 textarea {
@@ -478,7 +482,7 @@ select {
 }
 .search-box__input:focus {
     border-color: var(--green-700);
-    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.10);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.10);
 }
 .search-box button {
     position: absolute;
@@ -627,7 +631,7 @@ select {
 
 .note-item.is-active {
     border-color: var(--green-700);
-    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.15);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
 }
 
 .note-pin-badge {
@@ -1306,17 +1310,17 @@ select {
 
 .estrofe textarea:focus {
     border-color: var(--green-700);
-    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.10);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.10);
 }
 
 .estrofe textarea.is-saving {
-    border-color: var(--green-400, #66bb6a);
+    border-color: var(--green-400);
 }
 
 .texto-item.is-editing {
-    outline: 2px solid rgba(26, 107, 72, 0.18);
+    outline: 2px solid rgba(46, 125, 50, 0.18);
     outline-offset: 3px;
-    background: var(--green-50, #f1f8f4);
+    background: var(--green-50);
 }
 
 .texto-item {
@@ -1342,10 +1346,10 @@ select {
     cursor: pointer;
     transition: var(--transition-fast);
     color: var(--white);
-    background-color: var(--green-600);
+    background-color: var(--green-950);
 }
 
-.copy-btn:hover { background-color: var(--green-700); }
+.copy-btn:hover { background-color: var(--green-800); }
 
 .edit-btn {
     min-width: 90px;
@@ -1390,12 +1394,12 @@ select {
     cursor: pointer;
     transition: var(--transition-base);
     white-space: nowrap;
-    background-color: #e68a00;
+    background-color: var(--green-950);
     color: var(--white);
 }
 
 .add-estrofe-btn:hover {
-    background-color: #e68a00;
+    background-color: var(--green-800);
     transform: translateY(-1px);
 }
 
@@ -1487,13 +1491,13 @@ select {
 .gx-pill--red {
     background: var(--red-50);
     color: var(--red-600);
-    border-color: #FECACA;
+    border-color: rgba(198, 40, 40, 0.35);
 }
 
 .gx-pill--blue {
     background: var(--blue-50);
     color: var(--blue-600);
-    border-color: #BFDBFE;
+    border-color: #bbdefb;
 }
 
 .gx-dropdown { position: relative; }
@@ -1664,7 +1668,7 @@ select {
 .gx-btn-massa {
     width: 100%;
     padding: 12px;
-    background: var(--green-700);
+    background: var(--green-950);
     color: var(--white);
     border: none;
     border-radius: var(--radius-md);
@@ -1676,11 +1680,11 @@ select {
 }
 
 .gx-btn-add:hover,
-.gx-btn-massa:hover { background: var(--green-600); }
+.gx-btn-massa:hover { background: var(--green-800); }
 
 .gx-massa-hint {
     background: var(--blue-50);
-    border: 1px solid #BFDBFE;
+    border: 1px solid #bbdefb;
     border-radius: var(--radius-lg);
     padding: var(--space-4);
     margin-bottom: var(--space-4);
@@ -1801,7 +1805,7 @@ select {
 .gx-btn-gen {
     flex: 1;
     padding: 12px;
-    background: var(--green-700);
+    background: var(--green-950);
     color: var(--white);
     border: none;
     border-radius: var(--radius-md);
@@ -1812,7 +1816,7 @@ select {
     letter-spacing: 0.05em;
 }
 
-.gx-btn-gen:hover:not(:disabled) { background: var(--green-600); }
+.gx-btn-gen:hover:not(:disabled) { background: var(--green-800); }
 
 .gx-btn-gen:disabled {
     opacity: 0.4;
@@ -1992,7 +1996,7 @@ select {
 .label-form-input:focus,
 .label-form-select:focus {
     border-color: var(--green-700);
-    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.10);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.10);
 }
 
 /* Sliders */
@@ -2031,7 +2035,7 @@ select {
     border-radius: var(--radius-full);
     background: var(--green-700);
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(26, 107, 72, 0.3);
+    box-shadow: 0 2px 6px rgba(46, 125, 50, 0.3);
     border: 2px solid var(--white);
 }
 
@@ -2073,7 +2077,7 @@ select {
 
 .label-btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(26, 107, 72, 0.35);
+    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.35);
 }
 
 .label-btn-secondary {
@@ -2139,13 +2143,13 @@ select {
 .label-message.error {
     background: var(--red-50);
     color: var(--red-600);
-    border: 1px solid #FECACA;
+    border: 1px solid rgba(198, 40, 40, 0.35);
 }
 
 .label-message.info {
     background: var(--blue-50);
     color: var(--blue-600);
-    border: 1px solid #BFDBFE;
+    border: 1px solid #bbdefb;
 }
 
 
@@ -2794,7 +2798,7 @@ select {
 
 .buscador input[type="text"]:focus {
     border-color: var(--green-700);
-    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.12);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
 }
 
 .buscador .btn[type="submit"] {
@@ -2812,25 +2816,25 @@ select {
 
 /* Botões utilitários (usados pelo JS original) */
 .btn-success {
-    background-color: var(--green-600);
+    background-color: var(--green-950);
     color: var(--white);
     border: none;
 }
 
 .btn-success:hover {
-    background-color: var(--green-700);
+    background-color: var(--green-800);
     transform: translateY(-1px);
     box-shadow: var(--shadow-green);
 }
 
 .btn-primary {
-    background-color: var(--green-700);
+    background-color: var(--green-950);
     color: var(--white);
     border: none;
 }
 
 .btn-primary:hover {
-    background-color: var(--green-600);
+    background-color: var(--green-800);
     transform: translateY(-1px);
 }
 
@@ -2892,7 +2896,7 @@ select {
 
 .estrofe2 textarea:focus {
     border-color: var(--green-700);
-    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.10);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.10);
 }
 
 
@@ -2900,11 +2904,6 @@ select {
    BUSCA DE LOJAS — PAINEL iFood/Marketplace
    Escopo: .ifood-panel  /  .ifood-modal-*
    ============================================ */
-
-/* --green-200 (declarado aqui pois faltava no :root) */
-:root {
-    --green-200: #A7F3D0;
-}
 
 /* ── Painel wrapper ── */
 .ifood-panel {
@@ -2920,7 +2919,7 @@ select {
 
 /* ── Header verde ── */
 .ifood-header {
-    background: var(--green-700);
+    background: var(--green-950);
     color: var(--white);
     padding: var(--space-4) var(--space-5);
     display: flex;
@@ -2973,7 +2972,7 @@ select {
 .ifood-search-box input:focus {
     border-color: var(--green-700);
     background: var(--white);
-    box-shadow: 0 0 0 3px rgba(26, 107, 72, 0.12);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
 }
 
 .ifood-search-box input::placeholder {
@@ -3336,7 +3335,7 @@ select {
     justify-content: center;
     gap: var(--space-2);
     padding: var(--space-4);
-    background: var(--green-700);
+    background: var(--green-950);
     color: var(--white);
 }
 
